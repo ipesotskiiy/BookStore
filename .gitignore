@@ -1,3 +1,9 @@
 bookstore/__pycache__/
 user/checlist
 .env
+user/__pycache__/
+user/migrations/__pycache__/
+log/
+product/__pycache__/
+product/migrations/__pycache__/
+images/
