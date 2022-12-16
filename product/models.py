@@ -6,13 +6,22 @@ class Comment(models.Model):
     date = models.DateField(verbose_name='Comment date')
     text = models.TextField(verbose_name='Comment', max_length=900)
 
+    def __str__(self):
+        return self.text
+
 
 class Genre(models.Model):
     name = models.CharField(verbose_name='Genre', max_length=20)
 
+    def __str__(self):
+        return self.name
+
 
 class Rating(models.Model):
     name = models.FloatField(verbose_name='Rating', max_length=3)
+
+    def __str__(self):
+        return str(self.name)
 
 
 class Book(models.Model):
@@ -32,3 +41,6 @@ class Book(models.Model):
     class Meta:
         verbose_name = 'Book'
         verbose_name_plural = 'Books'
+
+    def __str__(self):
+        return self.title
