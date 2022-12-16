@@ -15,12 +15,13 @@ Including another URLconf
 """
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from bookstore import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('book/', include('product.urls'))
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, documents_root=settings.STATIC_ROOT)

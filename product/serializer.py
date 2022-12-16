@@ -22,7 +22,9 @@ class RatingSerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
+    bookId = serializers.SerializerMethodField('get_id')
     class Meta:
+
         model = Book
         fields = (
             'comment',
@@ -36,5 +38,10 @@ class BookSerializer(serializers.ModelSerializer):
             'in_stock',
             'description',
             'average_rate',
-            'is_in_favorite'
+            'is_in_favorite',
+            'id',
+            'bookId'
         )
+
+    def get_id(self, obj):
+        return obj.id
