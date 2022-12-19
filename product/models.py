@@ -31,7 +31,7 @@ class Book(models.Model):
 
 class Comment(models.Model):
     date = models.DateField(verbose_name='Comment date', default=timezone.now)
-    text = models.TextField(verbose_name='Comment', max_length=900, null=True, blank=True)
+    text = models.TextField(verbose_name='Comment', max_length=900, default='Test')
     bookId = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name='book id', null=True, blank=True)
 
     def __str__(self):

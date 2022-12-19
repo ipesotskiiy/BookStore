@@ -3,8 +3,8 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from product.models import Book
-from product.serializer import BookSerializer
+from product.models import Book, Genre
+from product.serializer import BookSerializer, GenreSerializer
 
 
 # Create your views here.
@@ -25,10 +25,19 @@ class BookView(APIView):
         serializer = BookSerializer(books, many=True)
         return Response({"books": serializer.data})
 
+class GenreView(APIView):
+    def get(self, request):
+        queryset = Genre.objects.all()
+        serializer = GenreSerializer(queryset, many=True)
+        return Response({'genres': serializer.data})
+
 
 class OneBookView(APIView):
     def get(self, request, id):
-        queryset = Book.objects.all() #filter(pk=self.kwargs['id'])
-        serializer = BookSerializer(queryset, many=True)
+        queryset = Book.objects.get(pk=self.kwargs['id'])
+        serializer = BookSerializer(queryset)
         # print(queryset[0].comment_set)
         return Response({"book": serializer.data})
+
+
+
