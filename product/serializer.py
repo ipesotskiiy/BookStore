@@ -15,6 +15,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class GenreSerializer(serializers.ModelSerializer):
     genreId = serializers.SerializerMethodField('get_id')
+
     class Meta:
         model = Genre
         fields = ('name', 'genreId')
@@ -31,10 +32,13 @@ class RatingSerializer(serializers.ModelSerializer):
 
 class BookSerializer(serializers.ModelSerializer):
     bookId = serializers.SerializerMethodField('get_id')
-    comments = serializers.SerializerMethodField('comment_set2')
-    comments_all = CommentSerializer(many=True, read_only=True)
+    comments = CommentSerializer(many=True)
+
+    # genres = GenreSerializer(many=True)
+
     # genres = GenreSerializer(many=True)
     class Meta:
+        depth = 1
         model = Book
         fields = (
             '__all__'
@@ -74,7 +78,3 @@ class ReporterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reporter
         fields = ['first_name', 'last_name', 'email', 'articles']
-
-
-
-
