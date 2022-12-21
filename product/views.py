@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import filters, generics
 
-from product.filters import PriceFilter
+from product.filters import GenreAndPriceFilter
 from product.models import Book, Genre
 from product.serializer import BookSerializer, GenreSerializer
 
@@ -18,6 +18,7 @@ class GenreView(generics.ListAPIView):
     serializer_class = GenreSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ['name']
+
     def get(self, request):
         queryset = Genre.objects.all()
         serializer = GenreSerializer(queryset, many=True)
@@ -58,22 +59,19 @@ class BookVS(ModelViewSet):
 class BookView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = GenreAndPriceFilter
     filterset_fields = ['price', 'title', 'comments__id', 'genre__id']
     search_fields = ['price', 'title', 'comments__text']
-    ordering_fields = ['title', 'id']
-    ordering = ['title']
+    ordering_fields = ['title', 'id', 'price', 'author', 'date_of_issue', 'average_rate']
+    ordering = ['title', 'price', 'author', 'date_of_issue', 'average_rate']
 
     # filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     # filterset_fields = ['genre', 'comments', 'price']
     # search_fields = ['=genre', 'comments', 'price']
-
 
     def get(self, request):
         books_qs = self.filter_queryset(Book.objects.all())
         serializer = BookSerializer(books_qs, many=True)
         # the many param informs the serializer that it will be serializing more than a single article.
         return Response({"books": serializer.data})
-
-
-
