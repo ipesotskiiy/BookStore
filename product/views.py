@@ -29,7 +29,6 @@ class OneBookView(APIView):
     def get(self, request, id):
         queryset = Book.objects.get(pk=self.kwargs['id'])
         serializer = BookSerializer(queryset)
-        # print(queryset[0].comment_set)
         return Response({"book": serializer.data})
 
 

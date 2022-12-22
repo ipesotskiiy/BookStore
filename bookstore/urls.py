@@ -15,14 +15,19 @@ Including another URLconf
 """
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.conf.urls import include
+from django.urls import path
+from rest_framework.authtoken.views import obtain_auth_token
 
 from bookstore import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('book/', include('product.urls'))
+    path('book/', include('product.urls')),
+    path('auth/', include('user.urls')),
+    path('api-token-auth', obtain_auth_token, name='api_token_auth')
 ]
+
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, documents_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
