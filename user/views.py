@@ -1,26 +1,43 @@
-from django.shortcuts import render
+from django.db import IntegrityError
 from rest_framework import generics
-
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import AllowAny
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from user.models import User
-from user.serializer import UserSerializer, RegisterSerializer
+from user.serializer import UserSerializer, RegisterSerializer, MyTokenObtainPairSerializer
 
 
 # Create your views here.
-class UserDetailAPI(APIView):
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (AllowAny,)
-
-    def get(self, request, *args, **kwargs):
-        user = User.objects.get(id=request.user.id)
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
-
-
 class RegisterUserAPIView(generics.CreateAPIView):
-    permission_classes = (AllowAny,)
+    # permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid():
+                print('valid')
+                user = serializer.save()
+                access = AccessToken.for_user(user)
+                refresh = RefreshToken.for_user(user)
+                return Response({"user": UserSerializer(user, context=self.get_serializer_context()).data,
+                                 "message": "User Created Successfully.  Now perform Login to get your token",
+                                 "access": access, "refresh": refresh })
+            else:
+                print('not valid')
+                #TODO return response with error explanation
+
+        except IntegrityError as e:
+            account = User.objects.get(username='')
+            account.delete()
+            raise ValidationError({"400": f'{str(e)}'})
+
+        except KeyError as e:
+            print(e)
+            raise ValidationError({"400": f'Field {str(e)} missing'})
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer

@@ -13,7 +13,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     bookId = models.ManyToManyField('product.Book', null=True, blank=True)
     role = models.CharField(verbose_name='User role', max_length=10, null=True, blank=True)
     email = models.EmailField(verbose_name='Your email', max_length=40, db_index=True, unique=True)
-    name = models.CharField(verbose_name='Your name', max_length=30)
+    name = models.CharField(verbose_name='Your name', max_length=30, null=True, blank=True)
     password = models.CharField(verbose_name='Your password', max_length=255)
     avatar = models.CharField(verbose_name='Your avatar', max_length=250, null=True, blank=True)
     is_active = models.BooleanField(default=True)
