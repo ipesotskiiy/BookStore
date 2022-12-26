@@ -2,6 +2,7 @@ from django.db import IntegrityError
 from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
@@ -17,7 +18,7 @@ class RegisterUserAPIView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         try:
             serializer = self.get_serializer(data=request.data)
-            if serializer.is_valid():
+            if serializer.is_valid(raise_exception=True):
                 print('valid')
                 user = serializer.save()
                 access = AccessToken.for_user(user)
@@ -30,8 +31,7 @@ class RegisterUserAPIView(generics.CreateAPIView):
 
             else:
                 print('not valid')
-                #TODO return response with error explanation
-                return Response({"message": "For not valid", "error": ""})
+                return Response({"message": 'not valid'})
 
         except IntegrityError as e:
             account = User.objects.get(username='')
