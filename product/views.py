@@ -8,8 +8,9 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework import filters, generics
 
 from product.filters import GenreAndPriceFilter
-from product.models import Book, Genre
-from product.serializer import BookSerializer, GenreSerializer
+from product.models import Book, Genre, Comment
+from product.serializer import BookSerializer, GenreSerializer, CommentSerializer, RatingSerializer
+import random
 
 
 # Create your views here.
@@ -23,6 +24,18 @@ class GenreView(generics.ListAPIView):
         queryset = Genre.objects.all()
         serializer = GenreSerializer(queryset, many=True)
         return Response({'genres': serializer.data})
+
+
+class CreateRatingView(generics.CreateAPIView):
+    serializer_class = RatingSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            rating = serializer.save()
+            return Response({'rating': str(RatingSerializer(rating))})
+        else:
+            return Response({'invalid': 'Invalid rating'})
 
 
 class OneBookView(APIView):
@@ -74,3 +87,35 @@ class BookView(generics.ListAPIView):
         serializer = BookSerializer(books_qs, many=True)
         # the many param informs the serializer that it will be serializing more than a single article.
         return Response({"books": serializer.data})
+
+
+class CreateCommentView(generics.CreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            comment = serializer.save()
+            return Response({'comment': CommentSerializer(comment).data})
+        else:
+            return Response({'invalid': 'Invalid comment'})
+
+
+class RecommendationView(generics.ListAPIView):
+
+    def get(self, request):
+        books = Book.objects.all()
+        # [book.id for book in Book.objects.all()]
+        while True:
+            book1 = random.choice(books)
+            book2 = random.choice(books)
+            if book1 != book2:
+                recommendation1 = BookSerializer(book1)
+                recommendation2 = BookSerializer(book2)
+                break
+
+        return Response({
+            'First recommendations': recommendation1.data,
+            'Second recommendations': recommendation2.data
+                            })

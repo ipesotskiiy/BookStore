@@ -4,18 +4,18 @@ from product.models import Comment, Genre, Rating, Book, Article, Reporter
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    date = serializers.DateTimeField(required=True, input_formats=['%Y-%M-%D %H-%s'])
+    date = serializers.DateTimeField(required=True)
 
     def validate(self, value):
-        return value #.date('%Y-%m-%d') if value else value
+        return value
 
     class Meta:
         model = Comment
         fields = (
-            '__all__'
+            'date',
+            'text',
+            'bookId'
         )
-        # 'text',
-        # 'bookId')
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -32,37 +32,19 @@ class GenreSerializer(serializers.ModelSerializer):
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
-        fields = ('name',)
+        fields = ('__all__')
 
 
 class BookSerializer(serializers.ModelSerializer):
     bookId = serializers.SerializerMethodField('get_id')
     comments = CommentSerializer(many=True)
 
-
-    # genres = GenreSerializer(many=True)
-
-    # genres = GenreSerializer(many=True)
     class Meta:
         depth = 1
         model = Book
         fields = (
             '__all__'
         )
-        #     'comments',
-        #     'genre',
-        #     'title',
-        #     'author',
-        #     'price',
-        #     'cover',
-        #     'date_of_issue',
-        #     'in_stock',
-        #     'description',
-        #     'average_rate',
-        #     'is_in_favorite',
-        #     'id',
-        #     'bookId'
-        # )
 
     def comment_set2(self, obj):
         return []
@@ -78,7 +60,6 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
 class ReporterSerializer(serializers.ModelSerializer):
-    # articles = ArticleSerializer(many=True, read_only=True, q)
     articles = serializers.PrimaryKeyRelatedField(many=True, queryset=Article.objects.all())
 
     class Meta:
