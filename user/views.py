@@ -1,5 +1,5 @@
 from django.db import IntegrityError
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -22,12 +22,16 @@ class RegisterUserAPIView(generics.CreateAPIView):
                 user = serializer.save()
                 access = AccessToken.for_user(user)
                 refresh = RefreshToken.for_user(user)
-                return Response({"user": UserSerializer(user, context=self.get_serializer_context()).data,
+                resp = Response({"user": UserSerializer(user, context=self.get_serializer_context()).data,
                                  "message": "User Created Successfully.  Now perform Login to get your token",
-                                 "access": access, "refresh": refresh })
+                                 "access": str(access), "refresh": str(refresh)
+                                 })
+                return resp
+
             else:
                 print('not valid')
                 #TODO return response with error explanation
+                return Response({"message": "For not valid", "error": ""})
 
         except IntegrityError as e:
             account = User.objects.get(username='')

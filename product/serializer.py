@@ -4,6 +4,11 @@ from product.models import Comment, Genre, Rating, Book, Article, Reporter
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    date = serializers.DateTimeField(required=True, input_formats=['%Y-%M-%D %H-%s'])
+
+    def validate(self, value):
+        return value #.date('%Y-%m-%d') if value else value
+
     class Meta:
         model = Comment
         fields = (
@@ -33,6 +38,7 @@ class RatingSerializer(serializers.ModelSerializer):
 class BookSerializer(serializers.ModelSerializer):
     bookId = serializers.SerializerMethodField('get_id')
     comments = CommentSerializer(many=True)
+
 
     # genres = GenreSerializer(many=True)
 
