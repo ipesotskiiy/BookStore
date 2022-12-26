@@ -11,7 +11,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'id',
-            'email'
+            'email',
+            'avatar'
         )
 
 
@@ -39,13 +40,22 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
+        if not UniqueValidator(attrs['email']):
+            raise serializers.ValidationError(
+                {
+                    'email': 'This email is already taken'
+                }
+            )
+
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError(
                 {
                     'password': 'Passwords do not match'
                 }
             )
+
         return attrs
+
 
     def create(self, validated_data):
         user = User.objects.create_user(
@@ -53,8 +63,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
-
-
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
