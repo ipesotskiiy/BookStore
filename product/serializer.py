@@ -1,6 +1,8 @@
+from itertools import count
+
 from rest_framework import serializers
 
-from product.models import Comment, Genre, Rating, Book, Article, Reporter
+from product.models import Comment, Genre, Rating, Book
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -32,7 +34,7 @@ class GenreSerializer(serializers.ModelSerializer):
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
-        fields = ('__all__')
+        fields = '__all__'
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -53,15 +55,23 @@ class BookSerializer(serializers.ModelSerializer):
         return obj.id
 
 
-class ArticleSerializer(serializers.ModelSerializer):
+class BookRateSerializer(serializers.ModelSerializer):
+    bookId = serializers.SerializerMethodField('get_id')
+    average_rate = serializers.SerializerMethodField('calculate_average_rate_value')
+
+    def calculate_average_rate_value(self, book):
+        ratings = [item.name for item in Rating.objects.filter(bookId=book.bookId)]
+        count_rate = len(ratings)
+        sum_rate = sum(ratings)
+        return sum_rate/count_rate
+
+    def get_id(self, obj):
+        return obj.bookId_id
+
     class Meta:
-        model = Article
-        fields = ['headline', 'pub_date']
+        model = Book
+        fields = [
+            'bookId',
+            'average_rate'
+        ]
 
-
-class ReporterSerializer(serializers.ModelSerializer):
-    articles = serializers.PrimaryKeyRelatedField(many=True, queryset=Article.objects.all())
-
-    class Meta:
-        model = Reporter
-        fields = ['first_name', 'last_name', 'email', 'articles']

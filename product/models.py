@@ -46,29 +46,9 @@ class Comment(models.Model):
 
 
 class Rating(models.Model):
-    bookId = models.ForeignKey(Book, on_delete=models.CASCADE)
-    name = models.FloatField(verbose_name='Rating', max_length=3)
+    bookId = models.ForeignKey(Book, related_name='rating', on_delete=models.CASCADE)
+    name = models.PositiveIntegerField(verbose_name='Rating')
 
     def __str__(self):
         return str(self.name)
 
-
-class Reporter(models.Model):
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-    email = models.EmailField(null=True, blank=True)
-
-    def __str__(self):
-        return "%s %s" % (self.first_name, self.last_name)
-
-
-class Article(models.Model):
-    headline = models.CharField(max_length=100)
-    pub_date = models.DateField()
-    reporter = models.ForeignKey(Reporter, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.headline
-
-    class Meta:
-        ordering = ['headline']

@@ -8,8 +8,8 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework import filters, generics
 
 from product.filters import GenreAndPriceFilter
-from product.models import Book, Genre, Comment
-from product.serializer import BookSerializer, GenreSerializer, CommentSerializer, RatingSerializer
+from product.models import Book, Genre, Comment, Rating
+from product.serializer import BookSerializer, GenreSerializer, CommentSerializer, RatingSerializer, BookRateSerializer
 import random
 
 
@@ -33,9 +33,16 @@ class CreateRatingView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             rating = serializer.save()
-            return Response({'rating': str(RatingSerializer(rating))})
+            return Response({'rating': str(RatingSerializer(rating).data)})
         else:
             return Response({'invalid': 'Invalid rating'})
+
+
+class AverRateView(generics.ListAPIView):
+    def get(self, request, id):
+        queryset = Rating.objects.all()
+        serializer = BookRateSerializer(queryset, many=True)
+        return Response({'aver_rate': serializer.data})
 
 
 class OneBookView(APIView):
@@ -62,11 +69,6 @@ class BookVS(ModelViewSet):
     ordering_fields = ['title', 'id']
     ordering = ['title']
 
-    # def list(self, request):
-    #     queryset = Book.objects.all()
-    #     serializer = BookSerializer(queryset, many=True)
-    #     return Response(serializer.data)
-
 
 class BookView(generics.ListAPIView):
     queryset = Book.objects.all()
@@ -77,10 +79,6 @@ class BookView(generics.ListAPIView):
     search_fields = ['price', 'title', 'comments__text']
     ordering_fields = ['title', 'id', 'price', 'author', 'date_of_issue', 'average_rate']
     ordering = ['title', 'price', 'author', 'date_of_issue', 'average_rate']
-
-    # filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    # filterset_fields = ['genre', 'comments', 'price']
-    # search_fields = ['=genre', 'comments', 'price']
 
     def get(self, request):
         books_qs = self.filter_queryset(Book.objects.all())
@@ -105,17 +103,31 @@ class CreateCommentView(generics.CreateAPIView):
 class RecommendationView(generics.ListAPIView):
 
     def get(self, request):
-        books = Book.objects.all()
-        # [book.id for book in Book.objects.all()]
-        while True:
-            book1 = random.choice(books)
-            book2 = random.choice(books)
-            if book1 != book2:
-                recommendation1 = BookSerializer(book1)
-                recommendation2 = BookSerializer(book2)
-                break
-
+        # books = Book.objects.all()
+        books = [book.id for book in Book.objects.all()]
+        book1 = random.choice(books)
+        book_for_first_recommendation = Book.objects.filter(pk=book1)
+        first_rec = Book.objects.get(pk=book1)
+        books_without_first_recomendation = [book.id for book in Book.objects.all().exclude(
+            id__in=book_for_first_recommendation
+        )]
+        book2 = random.choice(books_without_first_recomendation)
+        second_rec = Book.objects.get(pk=book2)
+        recommendation1 = BookSerializer(first_rec)
+        recommendation2 = BookSerializer(second_rec)
         return Response({
-            'First recommendations': recommendation1.data,
-            'Second recommendations': recommendation2.data
-                            })
+            'First recommendation': recommendation1.data,
+            'Second recommendation': recommendation2.data
+        })
+        # while True:
+        #     book1 = random.choice(books)
+        #     book2 = random.choice(books)
+        #     if book1 != book2:
+        #         recommendation1 = BookSerializer(book1)
+        #         recommendation2 = BookSerializer(book2)
+        #         break
+        #
+        # return Response({
+        #     'First recommendations': recommendation1.data,
+        #     'Second recommendations': recommendation2.data
+        #                     })

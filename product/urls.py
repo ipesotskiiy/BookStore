@@ -8,7 +8,8 @@ from product.views import (
     BookVS,
     CreateCommentView,
     CreateRatingView,
-    RecommendationView
+    RecommendationView,
+    AverRateView
 )
 
 app_name = 'product'
@@ -22,4 +23,5 @@ urlpatterns = [
     path('genres', GenreView.as_view(), name='genres'),
     path('genres/<id>', OneGenreView.as_view(), name='genre'),
     path('<id>', OneBookView.as_view(), name='book'),
+    path('<id>/aver_rate', AverRateView.as_view(), name='aver_rate'),
 ]
