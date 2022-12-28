@@ -19,9 +19,9 @@ urlpatterns = [
     path('all2', BookVS.as_view({'get': 'list'}), name='books2'),
     path('add-comment', CreateCommentView.as_view(), name='add-comment'),
     path('rate', CreateRatingView.as_view(), name='add-rating'),
-    path('recommendations', RecommendationView.as_view(), name='recommendations'),
+    path('recommendations&exclude=<id>', RecommendationView.as_view(), name='recommendations'),
     path('genres', GenreView.as_view(), name='genres'),
     path('genres/<id>', OneGenreView.as_view(), name='genre'),
     path('<id>', OneBookView.as_view(), name='book'),
-    path('<id>/aver_rate', AverRateView.as_view(), name='aver_rate'),
+    path('<id>/rate', AverRateView.as_view(), name='aver_rate'),
 ]

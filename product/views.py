@@ -40,18 +40,20 @@ class CreateRatingView(generics.CreateAPIView):
 
 class AverRateView(generics.ListAPIView):
     def get(self, request, id):
-        queryset = Rating.objects.all()
-        serializer = BookRateSerializer(queryset, many=True)
+        rating = Rating.objects.filter(bookId=self.kwargs['id'])
+        serializer = BookRateSerializer(rating, many=True)
         return Response({'aver_rate': serializer.data})
 
 
 class OneBookView(APIView):
     def get(self, request, id):
-        queryset = Book.objects.get(pk=self.kwargs['id'])
-        serializer = BookSerializer(queryset)
-        return Response({"book": serializer.data})
+        book = Book.objects.get(pk=self.kwargs['id'])
+        book_serializer = BookSerializer(book)
+        return Response({
+            "book": book_serializer.data,
+                         })
 
-
+# [i for i in RateSerializer(obj.rating, many=True).data]
 class OneGenreView(APIView):
 
     def get(self, request, id):
@@ -77,8 +79,8 @@ class BookView(generics.ListAPIView):
     filterset_class = GenreAndPriceFilter
     filterset_fields = ['price', 'title', 'comments__id', 'genre__id']
     search_fields = ['price', 'title', 'comments__text']
-    ordering_fields = ['title', 'id', 'price', 'author', 'date_of_issue', 'average_rate']
-    ordering = ['title', 'price', 'author', 'date_of_issue', 'average_rate']
+    ordering_fields = ['title', 'id', 'price', 'author', 'date_of_issue', 'averageRate']
+    ordering = ['title', 'price', 'author', 'date_of_issue', 'averageRate']
 
     def get(self, request):
         books_qs = self.filter_queryset(Book.objects.all())
@@ -102,23 +104,17 @@ class CreateCommentView(generics.CreateAPIView):
 
 class RecommendationView(generics.ListAPIView):
 
-    def get(self, request):
-        # books = Book.objects.all()
-        books = [book.id for book in Book.objects.all()]
-        book1 = random.choice(books)
-        book_for_first_recommendation = Book.objects.filter(pk=book1)
-        first_rec = Book.objects.get(pk=book1)
-        books_without_first_recomendation = [book.id for book in Book.objects.all().exclude(
-            id__in=book_for_first_recommendation
-        )]
-        book2 = random.choice(books_without_first_recomendation)
-        second_rec = Book.objects.get(pk=book2)
-        recommendation1 = BookSerializer(first_rec)
-        recommendation2 = BookSerializer(second_rec)
-        return Response({
-            'First recommendation': recommendation1.data,
-            'Second recommendation': recommendation2.data
-        })
+    def get(self, request, id):
+        books_without_excluded = Book.objects.exclude(id=self.kwargs['id']).all()
+
+        [book1, book2] = random.sample(list(books_without_excluded), k=2)
+        recommendation1 = BookSerializer(book1).data
+        recommendation2 = BookSerializer(book2).data
+        return Response(
+            # 'First recommendation': recommendation1,
+            # 'Second recommendation': recommendation2
+            [recommendation1, recommendation2]
+        )
         # while True:
         #     book1 = random.choice(books)
         #     book2 = random.choice(books)

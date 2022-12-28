@@ -22,7 +22,7 @@ class Book(models.Model):
     date_of_issue = models.DateField(verbose_name='Date of Issue', default=timezone.now)
     in_stock = models.PositiveIntegerField(verbose_name='In stock', null=True, blank=True)
     description = models.TextField(verbose_name='Description', max_length=900, null=True, blank=True)
-    average_rate = models.FloatField(verbose_name='Average rate', null=True, blank=True, max_length=3)
+    averageRate = models.FloatField(verbose_name='Average rate', null=True, blank=True, max_length=3)
     is_in_favorite = models.BooleanField()
 
     class Meta:

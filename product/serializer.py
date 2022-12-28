@@ -37,9 +37,35 @@ class RatingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class RateSerializer(serializers.ModelSerializer):
+    # bookId = serializers.SerializerMethodField('get_id')
+    # averageRate = serializers.SerializerMethodField('calculate_average_rate_value')
+
+    def calculate_average_rate_value(self, book):
+        ratings = [item.name for item in Rating.objects.filter(bookId=book.bookId_id)]
+        count_rate = len(ratings)
+        sum_rate = sum(ratings)
+        return sum_rate / count_rate
+
+    def get_id(self, obj):
+        return obj.bookId_id
+
+    class Meta:
+        model = Rating
+        fields = (
+            # 'bookId',
+            # 'averageRate',
+            # 'name'
+            '__all__'
+        )
+
+
 class BookSerializer(serializers.ModelSerializer):
     bookId = serializers.SerializerMethodField('get_id')
     comments = CommentSerializer(many=True)
+    rating = RateSerializer(many=True)
+    averageRate = serializers.SerializerMethodField('get_rating')
+    # averageRate = BookRateSerializer(many=True)
 
     class Meta:
         depth = 1
@@ -48,30 +74,36 @@ class BookSerializer(serializers.ModelSerializer):
             '__all__'
         )
 
-    def comment_set2(self, obj):
-        return []
+    def get_rating(self, obj):
+        ratings = [i.get('name') for i in RateSerializer(obj.rating, many=True).data]
+        len_rat = len(ratings)
+        sum_rat = sum(ratings)
+        if len_rat == 0 or sum_rat == 0:
+            return 0
+
+        average_rate = sum_rat/len_rat
+        if average_rate > 5:
+            average_rate = 5
+        return average_rate
 
     def get_id(self, obj):
         return obj.id
 
 
-class BookRateSerializer(serializers.ModelSerializer):
-    bookId = serializers.SerializerMethodField('get_id')
-    average_rate = serializers.SerializerMethodField('calculate_average_rate_value')
+class BookRateSerializer(BookSerializer):
+    # bookId = serializers.SerializerMethodField('get_id')
+    averageRate = serializers.SerializerMethodField('calculate_average_rate_value')
 
     def calculate_average_rate_value(self, book):
-        ratings = [item.name for item in Rating.objects.filter(bookId=book.bookId)]
+        a = 2
+        ratings = [item.name for item in Rating.objects.filter(bookId=book.bookId_id)]
         count_rate = len(ratings)
         sum_rate = sum(ratings)
-        return sum_rate/count_rate
+        return sum_rate / count_rate
 
     def get_id(self, obj):
         return obj.bookId_id
 
     class Meta:
         model = Book
-        fields = [
-            'bookId',
-            'average_rate'
-        ]
-
+        fields = '__all__'

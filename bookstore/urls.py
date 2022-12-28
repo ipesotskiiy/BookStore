@@ -23,7 +23,7 @@ from bookstore import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('book/', include('product.urls')),
-    path('auth/', include('user.urls')),
+    path('', include('user.urls')),
 ]
 
 if settings.DEBUG:
