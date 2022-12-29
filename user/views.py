@@ -3,6 +3,7 @@ from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.validators import UniqueValidator
+from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView, TokenViewBase
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
@@ -48,21 +49,24 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-class GetProfileView(TokenViewBase):
+class GetProfileView(APIView):
     # serializer_class = MyTokenObtainPairSerializer
     def get(self, request):
         try:
+            http_token = request.META['HTTP_AUTHORIZATION']
+            [bearer, token_value] = http_token.split(' ')
+            token = AccessToken(token=token_value)
+            token = token.payload
+            user_id = token.get('user_id', None)
+            user = User.objects.get(id=user_id)
 
-            # AccessToken(token=f"{request.META['HTTP_AUTHORIZATION']}".split(' ')[1]).payload.get('user_id', None)
-                # user = serializer.save()
-            request_token = AccessToken(token=f"{request.META['HTTP_AUTHORIZATION']}".split(' ')[1])
             resp = Response({
-                 "user": UserSerializer({}, context=self.get_serializer_context()).data,
-                 # "token": str(token),
-                 "message": 'access is allowed'
+                 "user": UserSerializer(user).data,
+                 # "token": token,
+                 # "message": 'access is allowed'
             })
             return resp
 
 
         except Exception as e:
-            raise ValidationError({"400": f'Field {str(e)} error'})
+            raise ValidationError({"400": f'{str(e)}'})
