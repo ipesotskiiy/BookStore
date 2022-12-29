@@ -5,7 +5,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from user.models import User
 
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -56,11 +55,11 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return attrs
 
-
     def create(self, validated_data):
         user = User.objects.create_user(
             email=validated_data['email'],
             password=validated_data['password']
+
         )
         return user
 
@@ -70,6 +69,9 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         # The default result (access/refresh tokens)
         data = super(MyTokenObtainPairSerializer, self).validate(attrs)
+        data['token'] = data.pop('access')
+        data['refreshToken'] = data.pop('refresh')
+
         # Custom data you want to include
         data.update({'user': UserSerializer(self.user).data})
         # and everything else you want to send in the response

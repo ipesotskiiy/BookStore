@@ -1,21 +1,23 @@
+from itertools import count
+
 from rest_framework import serializers
 
-from product.models import Comment, Genre, Rating, Book, Article, Reporter
+from product.models import Comment, Genre, Rating, Book
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    date = serializers.DateTimeField(required=True, input_formats=['%Y-%M-%D %H-%s'])
+    date = serializers.DateTimeField(required=True)
 
     def validate(self, value):
-        return value #.date('%Y-%m-%d') if value else value
+        return value
 
     class Meta:
         model = Comment
         fields = (
-            '__all__'
+            'date',
+            'text',
+            'bookId'
         )
-        # 'text',
-        # 'bookId')
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -32,55 +34,76 @@ class GenreSerializer(serializers.ModelSerializer):
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
-        fields = ('name',)
+        fields = '__all__'
+
+
+class RateSerializer(serializers.ModelSerializer):
+    # bookId = serializers.SerializerMethodField('get_id')
+    # averageRate = serializers.SerializerMethodField('calculate_average_rate_value')
+
+    def calculate_average_rate_value(self, book):
+        ratings = [item.name for item in Rating.objects.filter(bookId=book.bookId_id)]
+        count_rate = len(ratings)
+        sum_rate = sum(ratings)
+        return sum_rate / count_rate
+
+    def get_id(self, obj):
+        return obj.bookId_id
+
+    class Meta:
+        model = Rating
+        fields = (
+            # 'bookId',
+            # 'averageRate',
+            # 'name'
+            '__all__'
+        )
 
 
 class BookSerializer(serializers.ModelSerializer):
     bookId = serializers.SerializerMethodField('get_id')
     comments = CommentSerializer(many=True)
+    rating = RateSerializer(many=True)
+    averageRate = serializers.SerializerMethodField('get_rating')
+    # averageRate = BookRateSerializer(many=True)
 
-
-    # genres = GenreSerializer(many=True)
-
-    # genres = GenreSerializer(many=True)
     class Meta:
         depth = 1
         model = Book
         fields = (
             '__all__'
         )
-        #     'comments',
-        #     'genre',
-        #     'title',
-        #     'author',
-        #     'price',
-        #     'cover',
-        #     'date_of_issue',
-        #     'in_stock',
-        #     'description',
-        #     'average_rate',
-        #     'is_in_favorite',
-        #     'id',
-        #     'bookId'
-        # )
 
-    def comment_set2(self, obj):
-        return []
+    def get_rating(self, obj):
+        ratings = [i.get('name') for i in RateSerializer(obj.rating, many=True).data]
+        len_rat = len(ratings)
+        sum_rat = sum(ratings)
+        if len_rat == 0 or sum_rat == 0:
+            return 0
+
+        average_rate = sum_rat/len_rat
+        if average_rate > 5:
+            average_rate = 5
+        return average_rate
 
     def get_id(self, obj):
         return obj.id
 
 
-class ArticleSerializer(serializers.ModelSerializer):
+class BookRateSerializer(BookSerializer):
+    # bookId = serializers.SerializerMethodField('get_id')
+    averageRate = serializers.SerializerMethodField('calculate_average_rate_value')
+
+    def calculate_average_rate_value(self, book):
+        a = 2
+        ratings = [item.name for item in Rating.objects.filter(bookId=book.bookId_id)]
+        count_rate = len(ratings)
+        sum_rate = sum(ratings)
+        return sum_rate / count_rate
+
+    def get_id(self, obj):
+        return obj.bookId_id
+
     class Meta:
-        model = Article
-        fields = ['headline', 'pub_date']
-
-
-class ReporterSerializer(serializers.ModelSerializer):
-    # articles = ArticleSerializer(many=True, read_only=True, q)
-    articles = serializers.PrimaryKeyRelatedField(many=True, queryset=Article.objects.all())
-
-    class Meta:
-        model = Reporter
-        fields = ['first_name', 'last_name', 'email', 'articles']
+        model = Book
+        fields = '__all__'

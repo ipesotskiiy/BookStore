@@ -17,13 +17,18 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.conf.urls import include
 from django.urls import path
+from django.views.generic import TemplateView
 
 from bookstore import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('book/', include('product.urls')),
-    path('auth/', include('user.urls')),
+    path('', include('user.urls')),
+    # path('swagger-ui/', TemplateView.as_view(
+    #     template_name='swagger-ui.html',
+    #     extra_context={'schema_url': 'openapi-schema'}
+    # ), name='swagger-ui'),
 ]
 
 if settings.DEBUG:
