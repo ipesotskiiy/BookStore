@@ -1,12 +1,13 @@
 from itertools import count
 
+from django.utils import timezone
 from rest_framework import serializers
 
 from product.models import Comment, Genre, Rating, Book
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    date = serializers.DateTimeField(required=True)
+    date = serializers.DateTimeField(required=False, format="%Y-%m-%d %H:%M:%S")
 
     def validate(self, value):
         return value

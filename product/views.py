@@ -13,7 +13,6 @@ from product.serializer import BookSerializer, GenreSerializer, CommentSerialize
 import random
 
 
-# Create your views here.
 class GenreView(generics.ListAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
@@ -53,7 +52,6 @@ class OneBookView(APIView):
             "book": book_serializer.data,
                          })
 
-# [i for i in RateSerializer(obj.rating, many=True).data]
 class OneGenreView(APIView):
 
     def get(self, request, id):
@@ -85,7 +83,6 @@ class BookView(generics.ListAPIView):
     def get(self, request):
         books_qs = self.filter_queryset(Book.objects.all())
         serializer = BookSerializer(books_qs, many=True)
-        # the many param informs the serializer that it will be serializing more than a single article.
         return Response({"books": serializer.data})
 
 
@@ -111,19 +108,21 @@ class RecommendationView(generics.ListAPIView):
         recommendation1 = BookSerializer(book1).data
         recommendation2 = BookSerializer(book2).data
         return Response(
-            # 'First recommendation': recommendation1,
-            # 'Second recommendation': recommendation2
             [recommendation1, recommendation2]
         )
-        # while True:
-        #     book1 = random.choice(books)
-        #     book2 = random.choice(books)
-        #     if book1 != book2:
-        #         recommendation1 = BookSerializer(book1)
-        #         recommendation2 = BookSerializer(book2)
-        #         break
-        #
-        # return Response({
-        #     'First recommendations': recommendation1.data,
-        #     'Second recommendations': recommendation2.data
-        #                     })
+
+
+class GetFavoritesView(generics.ListAPIView,
+                       generics.CreateAPIView,
+                       generics.DestroyAPIView):
+
+    favorites_list = []
+
+    # def post(self, request, *args, **kwargs):
+
+
+
+
+
+
+
