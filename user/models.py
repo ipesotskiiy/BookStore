@@ -7,6 +7,10 @@ import product.models as product_models
 from user.managers import CustomUserManager
 
 
+def upload_to(instance, filename):
+    return 'images/{filename}'.format(filename=filename)
+
+
 # Create your models here.
 class User(AbstractBaseUser, PermissionsMixin):
     username = None

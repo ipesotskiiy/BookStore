@@ -33,6 +33,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class RatingSerializer(serializers.ModelSerializer):
+    name = serializers.IntegerField(required=False)
     class Meta:
         model = Rating
         fields = '__all__'
@@ -92,15 +93,17 @@ class BookSerializer(serializers.ModelSerializer):
 
 
 class BookRateSerializer(BookSerializer):
-    # bookId = serializers.SerializerMethodField('get_id')
     averageRate = serializers.SerializerMethodField('calculate_average_rate_value')
 
     def calculate_average_rate_value(self, book):
-        a = 2
         ratings = [item.name for item in Rating.objects.filter(bookId=book.bookId_id)]
+        for i in ratings:
+            if i is None:
+                i = 1
         count_rate = len(ratings)
         sum_rate = sum(ratings)
-        return sum_rate / count_rate
+        aver_rate = sum_rate / count_rate
+        return round(aver_rate, 2)
 
     def get_id(self, obj):
         return obj.bookId_id

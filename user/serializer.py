@@ -17,6 +17,16 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 
+class UploadAvatarSerializer(serializers.ModelSerializer):
+    avatar = serializers.FileField()
+
+    class Meta:
+        model = User
+        fields = (
+            'avatar',
+        )
+
+
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True,
