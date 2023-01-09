@@ -5,13 +5,15 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from user.models import User
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
             'id',
             'email',
-            'avatar'
+            'avatar',
+            'name'
         )
 
 

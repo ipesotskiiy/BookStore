@@ -61,12 +61,32 @@ class GetProfileView(APIView):
             user = User.objects.get(id=user_id)
 
             resp = Response({
-                 "user": UserSerializer(user).data,
-                 # "token": token,
-                 # "message": 'access is allowed'
+                "user": UserSerializer(user).data,
+                # "token": token,
+                # "message": 'access is allowed'
             })
             return resp
 
 
         except Exception as e:
             raise ValidationError({"400": f'{str(e)}'})
+
+
+class UpdateUserView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def path(self, request, pk, *args, **kwargs):
+        queryset = User.objects.get(pk=self.kwargs['pk'])
+        serializer = UserSerializer(queryset)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({'user': serializer.data})
+
+
+# class UploadAvatarView(generics.CreateAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+#
+#     def post(self, request, *args, **kwargs):
+#         pass
