@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'rest_framework_simplejwt',
     'rest_framework.authtoken',
     'knox',
     'corsheaders',
@@ -93,6 +94,14 @@ REST_FRAMEWORK = {
     # 'DATETIME_FORMAT': "YYYY-mm-%D hh-%s",
 
 }
+
+# SWAGGER_SETTINGS = {
+#     'SECURITY_DEFINITIONS': {
+#         'basic': {
+#             'type': 'JWT'
+#         }
+#     }
+# }
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),

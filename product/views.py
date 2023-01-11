@@ -120,6 +120,7 @@ class RecommendationView(generics.ListAPIView):
             [recommendation1, recommendation2]
         )
 
+
 class FavoritesView(generics.GenericAPIView):
     queryset = Book.objects.all()
     serializer_class = FavoriteSerializer
@@ -127,10 +128,10 @@ class FavoritesView(generics.GenericAPIView):
     def get(self, request):
         favorites_qs = Book.objects.filter(isInFavorite=True)
         serializer = BookSerializer(favorites_qs, many=True)
-        return Response({'favorites': serializer.data})
+        return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
-        queryset = self.queryset
+        qs_for_adding = Book.objects.filter(isInFavorite=False)
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -142,8 +143,6 @@ class FavoritesView(generics.GenericAPIView):
         queryset = self.queryset
         self.delete(queryset)
         return Response({'deleted': queryset})
-
-
 
 # class GetFavoritesView(generics.ListAPIView):
 #     queryset = Book.objects.all()
