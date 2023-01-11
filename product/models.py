@@ -23,7 +23,7 @@ class Book(models.Model):
     in_stock = models.PositiveIntegerField(verbose_name='In stock', null=True, blank=True)
     description = models.TextField(verbose_name='Description', max_length=900, null=True, blank=True)
     averageRate = models.FloatField(verbose_name='Average rate', null=True, blank=True, max_length=3)
-    is_in_favorite = models.BooleanField()
+    isInFavorite = models.BooleanField()
 
     class Meta:
         verbose_name = 'Book'
@@ -46,9 +46,9 @@ class Comment(models.Model):
 
 
 class Rating(models.Model):
-    bookId = models.ForeignKey(Book, related_name='rating', on_delete=models.CASCADE)
-    name = models.PositiveIntegerField(verbose_name='Rating')
+    bookId = models.ForeignKey(Book, related_name='ratings', on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(verbose_name='rating')
 
     def __str__(self):
-        return str(self.name)
+        return str(self.rating)
 

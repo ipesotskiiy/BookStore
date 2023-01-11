@@ -9,7 +9,15 @@ from rest_framework import filters, generics
 
 from product.filters import GenreAndPriceFilter
 from product.models import Book, Genre, Comment, Rating
-from product.serializer import BookSerializer, GenreSerializer, CommentSerializer, RatingSerializer, BookRateSerializer
+from product.serializer import (
+    BookSerializer,
+    GenreSerializer,
+    CommentSerializer,
+    RatingSerializer,
+    BookRateSerializer,
+    FavoriteSerializer
+)
+
 import random
 
 
@@ -31,16 +39,16 @@ class CreateRatingView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            rating = serializer.save()
-            return Response({'rating': str(RatingSerializer(rating).data)})
+            serializer.save()
+            return Response({'name': str(serializer.data)})
         else:
             return Response({'invalid': 'Invalid rating'})
 
 
 class AverRateView(generics.ListAPIView):
     def get(self, request, id):
-        rating = Rating.objects.filter(bookId=self.kwargs['id'])
-        serializer = BookRateSerializer(rating, many=True)
+        name = Rating.objects.filter(bookId=self.kwargs['id'])
+        serializer = BookRateSerializer(name, many=True)
         return Response({'aver_rate': serializer.data})
 
 
@@ -50,7 +58,8 @@ class OneBookView(APIView):
         book_serializer = BookSerializer(book)
         return Response({
             "book": book_serializer.data,
-                         })
+        })
+
 
 class OneGenreView(APIView):
 
@@ -111,18 +120,60 @@ class RecommendationView(generics.ListAPIView):
             [recommendation1, recommendation2]
         )
 
+class FavoritesView(generics.GenericAPIView):
+    queryset = Book.objects.all()
+    serializer_class = FavoriteSerializer
 
-class GetFavoritesView(generics.ListAPIView,
-                       generics.CreateAPIView,
-                       generics.DestroyAPIView):
+    def get(self, request):
+        favorites_qs = Book.objects.filter(isInFavorite=True)
+        serializer = BookSerializer(favorites_qs, many=True)
+        return Response({'favorites': serializer.data})
 
-    favorites_list = []
+    def post(self, request, *args, **kwargs):
+        queryset = self.queryset
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({'added favorites': FavoriteSerializer(serializer).data})
+        else:
+            return Response({'error': 'not valid'})
 
-    # def post(self, request, *args, **kwargs):
+    def delete(self, request, *args, **kwargs):
+        queryset = self.queryset
+        self.delete(queryset)
+        return Response({'deleted': queryset})
 
 
 
-
-
-
-
+# class GetFavoritesView(generics.ListAPIView):
+#     queryset = Book.objects.all()
+#     serializer_class = BookSerializer
+#
+#     def get(self, request):
+#         favorites_qs = Book.objects.filter(isInFavorite=True)
+#         serializer = BookSerializer(favorites_qs, many=True)
+#         return Response({'favorites': serializer.data})
+#
+#
+# class AddFavoritesView(generics.CreateAPIView):
+#     queryset = Book.objects.filter(isInFavorite=False)
+#     serializer_class = FavoriteSerializer
+#
+#     def post(self, request, *args, **kwargs):
+#         queryset = self.queryset
+#         serializer = self.get_serializer(data=request.data)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response({'added favorites': FavoriteSerializer(serializer).data})
+#         else:
+#             return Response({'error': 'not valid'})
+#
+#
+# class DeleteFavoritesView(generics.DestroyAPIView):
+#     queryset = Book.objects.filter(isInFavorite=True)
+#     serializer_class = FavoriteSerializer
+#
+#     def delete(self, request, *args, **kwargs):
+#         queryset = self.queryset
+#         self.delete(queryset)
+#         return Response({'deleted': queryset})
