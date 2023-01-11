@@ -1,7 +1,7 @@
 from django.db import IntegrityError
 from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
-from rest_framework.parsers import FileUploadParser, MultiPartParser
+from rest_framework.parsers import FileUploadParser, MultiPartParser, JSONParser
 from rest_framework.response import Response
 from rest_framework.validators import UniqueValidator
 from rest_framework.views import APIView
@@ -9,7 +9,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView, TokenViewBase
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import TokenAuthentication, get_authorization_header
 
 from user.models import User
 from user.serializer import UserSerializer, RegisterSerializer, MyTokenObtainPairSerializer, UploadAvatarSerializer
@@ -80,7 +80,7 @@ class UpdateUserView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def path(self, request, pk, *args, **kwargs):
+    def patch(self, request, pk, *args, **kwargs):
         queryset = User.objects.get(pk=self.kwargs['pk'])
         serializer = UserSerializer(queryset)
         if serializer.is_valid():
@@ -104,13 +104,23 @@ class UpdateUserView(generics.UpdateAPIView):
 
 class UploadAvatarView(generics.UpdateAPIView):
     authentication_classes = [JWTAuthentication]
+    parser_classes = [JSONParser] #MultiPartParser ]
     queryset = User.objects.all()
     serializer_class = UploadAvatarSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response({'user': serializer.data})
-        else:
-            return Response({"message": 'not valid'})
+        try:
+            # serializer = self.get_serializer(data=request.data)
+            # if serializer.is_valid(raise_exception=True):
+            #     serializer.save()
+            #     return Response({'avatar': serializer.data})
+
+            # auth = get_authorization_header(request)
+            # token = auth.split(auth)
+
+            current_user = request.user
+            user = User.objects.get(pk=current_user)
+            return Response({'user': user})
+
+        except Exception as e:
+            raise ValidationError({"400": f'{str(e)}'})

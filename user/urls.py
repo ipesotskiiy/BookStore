@@ -7,7 +7,7 @@ from user.views import (
     GetProfileView,
     UpdateUserView,
     # UploadViewSet,
-    UploadAvatarView
+     UploadAvatarView
 )
 
 app_name = 'user'
