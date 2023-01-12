@@ -17,7 +17,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.conf.urls import include
 from django.urls import path
-from django.views.generic import TemplateView
+from .yasg import urlpatterns as doc_urls
 
 from bookstore import settings
 
@@ -25,12 +25,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('book/', include('product.urls')),
     path('', include('user.urls')),
-    # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    # path('swagger-ui/', TemplateView.as_view(
-    #     template_name='swagger-ui.html',
-    #     extra_context={'schema_url': 'openapi-schema'}
-    # ), name='swagger-ui'),
+
 ]
+
+urlpatterns += doc_urls
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, documents_root=settings.STATIC_ROOT)
