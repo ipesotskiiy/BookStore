@@ -27,8 +27,10 @@ urlpatterns = [
     path('genres', GenreView.as_view(), name='genres'),
     path('genres/<id>', OneGenreView.as_view(), name='genre'),
     path('favorites', FavoritesView.as_view(), name='get_favorites'),
-    # path('add-favorites', FavoritesView.as_view(), name='add_favorites'),
-    # path('remove-favorites', FavoritesView.as_view(), name='delete_favorites'),
+    path('favorites/<id>', FavoritesView.as_view(), name='add_favorites'),
+    path('favorites/<id>', FavoritesView.as_view(), name='delete_favorites'),
+    path('patch-favorites/<id>', FavoritesView.as_view(), name='patch_favorites'),
     path('<id>', OneBookView.as_view(), name='book'),
     path('<id>/rate', AverRateView.as_view(), name='aver_rate'),
+
 ]

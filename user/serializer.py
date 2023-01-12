@@ -3,17 +3,28 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from product import serializer as SS
+
+from product.serializer import BookSerializer
+# try:
+# except ImportError:
+#     import sys
+#     BookSerializer = sys.modules[__package__ + '.BookSerializer']
+
 from user.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=False)
+    favorites = BookSerializer(many=True, required=False)
     class Meta:
         model = User
         fields = (
             'id',
             'email',
             'avatar',
-            'name'
+            'name',
+            'favorites'
         )
 
 

@@ -4,6 +4,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from product.models import Comment, Genre, Rating, Book
+# from user.serializer import UserSerializer
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -68,6 +69,7 @@ class BookSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True)
     ratings = RateSerializer(many=True)
     averageRate = serializers.SerializerMethodField('get_rating')
+    # user = UserSerializer(required=False, many=True)
 
     # averageRate = BookRateSerializer(many=True)
 
@@ -122,8 +124,10 @@ class FavoriteSerializer(serializers.ModelSerializer):
     author = serializers.CharField(required=False)
     price = serializers.DecimalField(required=False, max_digits=8, decimal_places=2)
     genre = serializers.CharField(required=False)
+    # user = UserSerializer(many=True, required=False)
 
     class Meta:
+        depth = 1
         model = Book
         fields = (
             '__all__'

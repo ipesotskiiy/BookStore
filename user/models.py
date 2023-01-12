@@ -14,7 +14,7 @@ def upload_to(instance, filename):
 # Create your models here.
 class User(AbstractBaseUser, PermissionsMixin):
     username = None
-    bookId = models.ManyToManyField('product.Book', null=True, blank=True)
+    favorites = models.ManyToManyField('product.Book', null=True, blank=True, related_name='favorites')
     role = models.CharField(verbose_name='User role', max_length=10, null=True, blank=True)
     email = models.EmailField(verbose_name='Your email', max_length=40, db_index=True, unique=True)
     name = models.CharField(verbose_name='Your name', max_length=30, null=True, blank=True)

@@ -17,13 +17,13 @@ class Book(models.Model):
     genre = models.ManyToManyField(Genre, related_name='genres')
     title = models.CharField(verbose_name='Book title', max_length=50)
     author = models.CharField(verbose_name='Author', max_length=80)
-    price = models.DecimalField(verbose_name='Price', max_digits=8, decimal_places=2)
+    price = models.DecimalField(verbose_name='Price', max_digits=8, decimal_places=2, null=True, blank=True)
     cover = models.CharField(verbose_name='Cover', max_length=250, null=True, blank=True)
     date_of_issue = models.DateField(verbose_name='Date of Issue', default=timezone.now)
     in_stock = models.PositiveIntegerField(verbose_name='In stock', null=True, blank=True)
     description = models.TextField(verbose_name='Description', max_length=900, null=True, blank=True)
     averageRate = models.FloatField(verbose_name='Average rate', null=True, blank=True, max_length=3)
-    isInFavorite = models.BooleanField()
+    isInFavorite = models.BooleanField(null=True, blank=True)
 
     class Meta:
         verbose_name = 'Book'
