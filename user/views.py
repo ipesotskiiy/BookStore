@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import FileUploadParser, MultiPartParser, JSONParser
@@ -7,12 +8,21 @@ from rest_framework.validators import UniqueValidator
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView, TokenViewBase
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView, TokenViewBase, TokenRefreshView, \
+    TokenBlacklistView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework.authentication import TokenAuthentication, get_authorization_header
 
 from user.models import User
-from user.serializer import UserSerializer, RegisterSerializer, MyTokenObtainPairSerializer, UploadAvatarSerializer
+from user.serializer import (
+    UserSerializer,
+    RegisterSerializer,
+    MyTokenObtainPairSerializer,
+    UploadAvatarSerializer,
+    TokenObtainPairResponseSerializer,
+    TokenRefreshResponseSerializer,
+    TokenVerifyResponseSerializer, TokenBlacklistResponseSerializer
+)
 
 
 # Create your views here.
@@ -104,7 +114,7 @@ class UpdateUserView(generics.UpdateAPIView):
 
 class UploadAvatarView(generics.UpdateAPIView):
     authentication_classes = [JWTAuthentication]
-    parser_classes = [JSONParser] #MultiPartParser ]
+    parser_classes = [JSONParser]  # MultiPartParser ]
     queryset = User.objects.all()
     serializer_class = UploadAvatarSerializer
 
@@ -124,3 +134,43 @@ class UploadAvatarView(generics.UpdateAPIView):
 
         except Exception as e:
             raise ValidationError({"400": f'{str(e)}'})
+
+
+class DecoratedTokenObtainPairView(TokenObtainPairView):
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK: TokenObtainPairResponseSerializer,
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+class DecoratedTokenRefreshView(TokenRefreshView):
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK: TokenRefreshResponseSerializer,
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+class DecoratedTokenVerifyView(TokenVerifyView):
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK: TokenVerifyResponseSerializer,
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+class DecoratedTokenBlacklistView(TokenBlacklistView):
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK: TokenBlacklistResponseSerializer,
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
