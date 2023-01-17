@@ -15,7 +15,7 @@ class GenreAdmin(admin.ModelAdmin):
 
 @admin.register(Rating)
 class Rating(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('rating',)
 
 
 @admin.register(Book)

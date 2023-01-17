@@ -1,19 +1,30 @@
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.mixins import UpdateModelMixin
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import filters, generics
 
 from product.filters import GenreAndPriceFilter
 from product.models import Book, Genre, Comment, Rating
-from product.serializer import BookSerializer, GenreSerializer, CommentSerializer, RatingSerializer, BookRateSerializer
+from product.serializer import (
+    BookSerializer,
+    GenreSerializer,
+    CommentSerializer,
+    RatingSerializer,
+    BookRateSerializer,
+    FavoriteSerializer
+)
+from user.serializer import UserSerializer
+
 import random
 
+from user.models import User
 
-# Create your views here.
+
 class GenreView(generics.ListAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
@@ -32,16 +43,16 @@ class CreateRatingView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            rating = serializer.save()
-            return Response({'rating': str(RatingSerializer(rating).data)})
+            serializer.save()
+            return Response({'name': str(serializer.data)})
         else:
             return Response({'invalid': 'Invalid rating'})
 
 
 class AverRateView(generics.ListAPIView):
     def get(self, request, id):
-        rating = Rating.objects.filter(bookId=self.kwargs['id'])
-        serializer = BookRateSerializer(rating, many=True)
+        name = Rating.objects.filter(bookId=self.kwargs['id'])
+        serializer = BookRateSerializer(name, many=True)
         return Response({'aver_rate': serializer.data})
 
 
@@ -51,9 +62,9 @@ class OneBookView(APIView):
         book_serializer = BookSerializer(book)
         return Response({
             "book": book_serializer.data,
-                         })
+        })
 
-# [i for i in RateSerializer(obj.rating, many=True).data]
+
 class OneGenreView(APIView):
 
     def get(self, request, id):
@@ -85,7 +96,6 @@ class BookView(generics.ListAPIView):
     def get(self, request):
         books_qs = self.filter_queryset(Book.objects.all())
         serializer = BookSerializer(books_qs, many=True)
-        # the many param informs the serializer that it will be serializing more than a single article.
         return Response({"books": serializer.data})
 
 
@@ -111,19 +121,26 @@ class RecommendationView(generics.ListAPIView):
         recommendation1 = BookSerializer(book1).data
         recommendation2 = BookSerializer(book2).data
         return Response(
-            # 'First recommendation': recommendation1,
-            # 'Second recommendation': recommendation2
             [recommendation1, recommendation2]
         )
-        # while True:
-        #     book1 = random.choice(books)
-        #     book2 = random.choice(books)
-        #     if book1 != book2:
-        #         recommendation1 = BookSerializer(book1)
-        #         recommendation2 = BookSerializer(book2)
-        #         break
-        #
-        # return Response({
-        #     'First recommendations': recommendation1.data,
-        #     'Second recommendations': recommendation2.data
-        #                     })
+
+
+class FavoritesView(generics.GenericAPIView):
+    queryset = Book.objects.all()
+    serializer_class = FavoriteSerializer
+
+    def get(self, request):
+        user = request.user
+        serializer = UserSerializer(user).data['favorites']
+        return Response(serializer)
+
+    def post(self, request, id, *args, **kwargs):
+        user = request.user
+        user.favorites.add(id)
+        return Response(UserSerializer(user).data)
+
+    def delete(self, request, id, *args, **kwargs):
+        user = request.user
+        user.favorites.remove(id)
+        return Response(UserSerializer(user).data)
+

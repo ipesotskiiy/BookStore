@@ -3,15 +3,35 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from product import serializer as SS
+
+from product.serializer import BookSerializer
+
 from user.models import User
 
+
 class UserSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=False)
+    favorites = BookSerializer(many=True, required=False)
+
     class Meta:
         model = User
         fields = (
             'id',
             'email',
-            'avatar'
+            'avatar',
+            'name',
+            'favorites'
+        )
+
+
+class UploadAvatarSerializer(serializers.ModelSerializer):
+    avatar = serializers.FileField()
+
+    class Meta:
+        model = User
+        fields = (
+            'avatar',
         )
 
 
@@ -76,3 +96,41 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data.update({'user': UserSerializer(self.user).data})
         # and everything else you want to send in the response
         return data
+
+
+class TokenObtainPairResponseSerializer(serializers.Serializer):
+    access = serializers.CharField()
+    refresh = serializers.CharField()
+
+    def create(self, validated_data):
+        raise NotImplementedError()
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError()
+
+
+class TokenRefreshResponseSerializer(serializers.Serializer):
+    access = serializers.CharField()
+
+    def create(self, validated_data):
+        raise NotImplementedError()
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError()
+
+
+class TokenVerifyResponseSerializer(serializers.Serializer):
+    def create(self, validated_data):
+        raise NotImplementedError()
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError()
+
+
+class TokenBlacklistResponseSerializer(serializers.Serializer):
+    def create(self, validated_data):
+        raise NotImplementedError()
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError()
+
