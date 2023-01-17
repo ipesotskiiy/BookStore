@@ -137,67 +137,10 @@ class FavoritesView(generics.GenericAPIView):
     def post(self, request, id, *args, **kwargs):
         user = request.user
         user.favorites.add(id)
-        print('ok')
-        # serializer = self.get_serializer(, data=request.data, partial=True)
-        # serializer.is_valid(raise_exception=True)
-        # self.perform_update(serializer)
-
-        # serializer = self.get_serializer(UserSerializer(user).data['favorites'].append(book))
-        # if serializer.is_valid(raise_exception=True):
-        #     serializer.perform_update()
         return Response(UserSerializer(user).data)
-        # else:
-        #     return Response({'error': 'not valid'})
-
-    def patch(self, request, id, *args, **kwargs):
-        book = Book.objects.get(self.kwargs['id'])
-        user = request.user
-        # serializer = self.get_serializer(UserSerializer(user).data['favorites'].append(book))
-        # self.partial_update(request)
-
-
-
-        # if serializer.is_valid(raise_exception=True):
-        #     # serializer.par()
-        #     return Response(UserSerializer(serializer).data)
-        # else:
-        #     return Response({'error': 'not valid'})
 
     def delete(self, request, id, *args, **kwargs):
-        book = Book.objects.get(pk=self.kwargs['id'])
         user = request.user
-        serializer = self.get_serializer(UserSerializer(user).data['favorites'].remove(book))
-        return Response(serializer.data)
+        user.favorites.remove(id)
+        return Response(UserSerializer(user).data)
 
-# class GetFavoritesView(generics.ListAPIView):
-#     queryset = Book.objects.all()
-#     serializer_class = BookSerializer
-#
-#     def get(self, request):
-#         favorites_qs = Book.objects.filter(isInFavorite=True)
-#         serializer = BookSerializer(favorites_qs, many=True)
-#         return Response({'favorites': serializer.data})
-#
-#
-# class AddFavoritesView(generics.CreateAPIView):
-#     queryset = Book.objects.filter(isInFavorite=False)
-#     serializer_class = FavoriteSerializer
-#
-#     def post(self, request, *args, **kwargs):
-#         queryset = self.queryset
-#         serializer = self.get_serializer(data=request.data)
-#         if serializer.is_valid(raise_exception=True):
-#             serializer.save()
-#             return Response({'added favorites': FavoriteSerializer(serializer).data})
-#         else:
-#             return Response({'error': 'not valid'})
-#
-#
-# class DeleteFavoritesView(generics.DestroyAPIView):
-#     queryset = Book.objects.filter(isInFavorite=True)
-#     serializer_class = FavoriteSerializer
-#
-#     def delete(self, request, *args, **kwargs):
-#         queryset = self.queryset
-#         self.delete(queryset)
-#         return Response({'deleted': queryset})
