@@ -81,7 +81,6 @@ class GetProfileView(APIView):
             })
             return resp
 
-
         except Exception as e:
             raise ValidationError({"400": f'{str(e)}'})
 
@@ -118,22 +117,19 @@ class UploadAvatarView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UploadAvatarSerializer
 
-    def post(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         try:
-            # serializer = self.get_serializer(data=request.data)
-            # if serializer.is_valid(raise_exception=True):
-            #     serializer.save()
-            #     return Response({'avatar': serializer.data})
-
-            # auth = get_authorization_header(request)
-            # token = auth.split(auth)
-
             current_user = request.user
-            user = User.objects.get(pk=current_user)
-            return Response({'user': user})
+            serializer = self.get_serializer(data=UploadAvatarSerializer(current_user).data['avatar'])
+            if serializer.is_valid(raise_exception=True):
+                serializer.perform_update()
+
+            return Response({
+                'avatar': serializer.data
+            })
 
         except Exception as e:
-            raise ValidationError({"400": f'{str(e)}'})
+            raise Exception(str(e))
 
 
 class DecoratedTokenObtainPairView(TokenObtainPairView):

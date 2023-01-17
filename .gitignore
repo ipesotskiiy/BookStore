@@ -8,3 +8,5 @@ product/__pycache__/
 product/migrations/__pycache__/
 images/
 logger/__pycache__/
+static/
+media/
