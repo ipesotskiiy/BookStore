@@ -1,3 +1,6 @@
+import base64
+
+from django.core.files.base import ContentFile
 from django.db import IntegrityError
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
@@ -12,6 +15,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView,
     TokenBlacklistView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework.authentication import TokenAuthentication, get_authorization_header
+from django.core.files.uploadedfile import InMemoryUploadedFile
+import io
 
 from user.models import User
 from user.serializer import (
@@ -120,12 +125,38 @@ class UploadAvatarView(generics.UpdateAPIView):
     def patch(self, request, *args, **kwargs):
         try:
             current_user = request.user
-            serializer = self.get_serializer(data=UploadAvatarSerializer(current_user).data['avatar'])
-            if serializer.is_valid(raise_exception=True):
-                serializer.perform_update()
+            # serializer_instance = self.serializer_class(data=self.request.data)
+            #
+            # if serializer_instance.is_valid(raise_exception=True):
+            #     serializer_instance.save()
+            #
+            #     return Response({
+            #         'avtar': serializer_instance.data
+            #     })
 
+
+            formatb, imgstr = request.data['img'].split(';base64,')
+            ext = formatb.split('/')[-1]
+
+            data = ContentFile(base64.b64decode(imgstr), name=ext)
+            print('qweqwe')
+
+
+            # img_io = io.BytesIO()
+            # data.save(img_io, format='JPEG')
+            base_path = InMemoryUploadedFile(data, field_name=None, name="myfile.jpg", content_type='image/jpeg', size=data.size, charset=None)
+            request.user.avatar = base_path
+            request.user.save()
+            # b64decoded_data = base64.b64decode(request.data['img']).decode('UTF-8')
+            # data = JSONParser().parse(b64decoded_data)
+
+
+            # serializer = self.get_serializer(data={'avatar': UploadAvatarSerializer(current_user).data['avatar']})
+            # if serializer.is_valid(raise_exception=True):
+            #     serializer.perform_update()
+            #
             return Response({
-                'avatar': serializer.data
+                'ok': 'da'
             })
 
         except Exception as e:

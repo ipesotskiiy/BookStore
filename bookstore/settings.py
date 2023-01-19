@@ -17,6 +17,8 @@ from dotenv import load_dotenv
 
 from logger.logging import dict_log
 
+from django.core.management.commands.runserver import Command as runserver
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -33,25 +35,24 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+# ALLOWED_HOSTS = [
+#     'localhost',
+#     '127.0.0.1'
+# ]
+
 ALLOWED_HOSTS = [
     "*"
 ]
+
+runserver.default_port = '8000'
+runserver.default_addr = 'localhost'
+
 # CORS_ORIGIN_WHITELIST = [
 #     "*"
 # ]
 CORS_ALLOW_CREDENTIALS = False
 
-# INSTALLED_APPS = [
-#     .....
-#     "corsheaders"
-# ]
-#
-#
-# MIDDLEWARE = [
-#     ......
-#     'corsheaders.middleware.CorsMiddleware',
-#     'django.middleware.common.CommonMiddleware',
-# ]
 
 # Application definition
 
@@ -92,13 +93,12 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    # 'DATETIME_FORMAT': "YYYY-mm-%D hh-%s",
 
 }
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
