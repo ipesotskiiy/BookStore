@@ -1,8 +1,6 @@
 from django.db import models
 from django.utils import timezone
 
-import user.models as user_model
-
 
 class Genre(models.Model):
     name = models.CharField(verbose_name='Genre', max_length=20)
@@ -51,4 +49,3 @@ class Rating(models.Model):
 
     def __str__(self):
         return str(self.rating)
-

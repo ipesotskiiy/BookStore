@@ -5,18 +5,13 @@ from django.db import IntegrityError
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
-from rest_framework.parsers import FileUploadParser, MultiPartParser, JSONParser
+from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
-from rest_framework.validators import UniqueValidator
 from rest_framework.views import APIView
-from rest_framework.viewsets import ViewSet
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView, TokenViewBase, TokenRefreshView, \
-    TokenBlacklistView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView, TokenRefreshView, TokenBlacklistView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from rest_framework.authentication import TokenAuthentication, get_authorization_header
 from django.core.files.uploadedfile import InMemoryUploadedFile
-import io
 
 from user.models import User
 from user.serializer import (
@@ -30,9 +25,7 @@ from user.serializer import (
 )
 
 
-# Create your views here.
 class RegisterUserAPIView(generics.CreateAPIView):
-    # permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):
@@ -42,9 +35,7 @@ class RegisterUserAPIView(generics.CreateAPIView):
                 user = serializer.save()
                 token = AccessToken.for_user(user)
                 refreshToken = RefreshToken.for_user(user)
-                # refreshToken.token_type = 'refreshToken'
                 resp = Response({"user": UserSerializer(user, context=self.get_serializer_context()).data,
-                                 # "message": "User Created Successfully.  Now perform Login to get your token",
                                  "token": str(token), "refreshToken": str(refreshToken)
                                  })
                 return resp
@@ -69,7 +60,6 @@ class MyTokenObtainPairView(TokenObtainPairView):
 class GetProfileView(APIView):
     authentication_classes = [JWTAuthentication]
 
-    # serializer_class = MyTokenObtainPairSerializer
     def get(self, request):
         try:
             http_token = request.META['HTTP_AUTHORIZATION']
@@ -81,8 +71,6 @@ class GetProfileView(APIView):
 
             resp = Response({
                 "user": UserSerializer(user).data,
-                # "token": token,
-                # "message": 'access is allowed'
             })
             return resp
 
@@ -104,18 +92,6 @@ class UpdateUserView(generics.UpdateAPIView):
             return Response({"message": 'not valid'})
 
 
-# class UploadViewSet(ViewSet):
-#     serializer_class = UploadAvatarSerializer
-#
-#     def list(self, request):
-#         return Response("GET API")
-#
-#     def create(self, request):
-#         avatar = request.FILES.get('avatar')
-#         content_type = avatar.content_type
-#         response = "POST API and you have uploaded a {} file".format(content_type)
-#         return Response(response)
-
 class UploadAvatarView(generics.UpdateAPIView):
     authentication_classes = [JWTAuthentication]
     parser_classes = [JSONParser]  # MultiPartParser ]
@@ -124,36 +100,15 @@ class UploadAvatarView(generics.UpdateAPIView):
 
     def patch(self, request, *args, **kwargs):
         try:
-            current_user = request.user
-            # serializer_instance = self.serializer_class(data=self.request.data)
-            #
-            # if serializer_instance.is_valid(raise_exception=True):
-            #     serializer_instance.save()
-            #
-            #     return Response({
-            #         'avtar': serializer_instance.data
-            #     })
-
-
             formatb, imgstr = request.data['img'].split(';base64,')
             ext = formatb.split('/')[-1]
 
             data = ContentFile(base64.b64decode(imgstr), name=ext)
 
-
-            # img_io = io.BytesIO()
-            # data.save(img_io, format='JPEG')
             base_path = InMemoryUploadedFile(data, field_name=None, name="myfile.jpg", content_type='image/jpeg', size=data.size, charset=None)
             request.user.avatar = base_path
             request.user.save()
-            # b64decoded_data = base64.b64decode(request.data['img']).decode('UTF-8')
-            # data = JSONParser().parse(b64decoded_data)
 
-
-            # serializer = self.get_serializer(data={'avatar': UploadAvatarSerializer(current_user).data['avatar']})
-            # if serializer.is_valid(raise_exception=True):
-            #     serializer.perform_update()
-            #
             return Response({
                 'ok': 'da'
             })

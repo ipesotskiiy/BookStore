@@ -1,10 +1,7 @@
-from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.mixins import UpdateModelMixin
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import filters, generics
 
@@ -21,8 +18,6 @@ from product.serializer import (
 from user.serializer import UserSerializer
 
 import random
-
-from user.models import User
 
 
 class GenreView(generics.ListAPIView):
@@ -143,4 +138,3 @@ class FavoritesView(generics.GenericAPIView):
         user = request.user
         user.favorites.remove(id)
         return Response(UserSerializer(user).data)
-

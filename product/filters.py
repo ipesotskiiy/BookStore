@@ -1,4 +1,3 @@
-import django_filters
 from django_filters import FilterSet, RangeFilter, BaseInFilter, CharFilter
 
 from product.models import Book

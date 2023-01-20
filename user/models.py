@@ -1,9 +1,7 @@
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
-from django.core.validators import RegexValidator
 from django.db import models
 
-import product.models as product_models
 from user.managers import CustomUserManager
 
 
@@ -11,7 +9,6 @@ def upload_to(instance, filename):
     return 'media/images/{filename}'.format(filename=filename)
 
 
-# Create your models here.
 class User(AbstractBaseUser, PermissionsMixin):
     username = None
     favorites = models.ManyToManyField('product.Book', null=True, blank=True, related_name='favorites')
