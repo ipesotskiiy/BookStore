@@ -94,7 +94,7 @@ class UpdateUserView(generics.UpdateAPIView):
 
 class UploadAvatarView(generics.UpdateAPIView):
     authentication_classes = [JWTAuthentication]
-    parser_classes = [JSONParser]  # MultiPartParser ]
+    parser_classes = [JSONParser]
     queryset = User.objects.all()
     serializer_class = UploadAvatarSerializer
 
@@ -105,7 +105,8 @@ class UploadAvatarView(generics.UpdateAPIView):
 
             data = ContentFile(base64.b64decode(imgstr), name=ext)
 
-            base_path = InMemoryUploadedFile(data, field_name=None, name="myfile.jpg", content_type='image/jpeg', size=data.size, charset=None)
+            base_path = InMemoryUploadedFile(data, field_name=None, name="myfile.jpg", content_type='image/jpeg',
+                                             size=data.size, charset=None)
             request.user.avatar = base_path
             request.user.save()
 
