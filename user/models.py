@@ -20,7 +20,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(verbose_name='Your name', max_length=30, null=True, blank=True)
     password = models.CharField(verbose_name='Your password', max_length=255)
     avatar = models.FileField(
-        upload_to='avatars',
+        upload_to='',
         verbose_name='Your avatar',
         max_length=250,
         null=True,

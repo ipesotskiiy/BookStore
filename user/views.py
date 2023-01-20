@@ -139,7 +139,6 @@ class UploadAvatarView(generics.UpdateAPIView):
             ext = formatb.split('/')[-1]
 
             data = ContentFile(base64.b64decode(imgstr), name=ext)
-            print('qweqwe')
 
 
             # img_io = io.BytesIO()

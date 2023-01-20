@@ -46,7 +46,7 @@ from user.models import User
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=False)
     favorites = BookSerializer(many=True, required=False)
-
+    avatar = serializers.SerializerMethodField('get_avatar')
 
     class Meta:
         model = User
@@ -55,8 +55,14 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'avatar',
             'name',
-            'favorites'
+            'favorites',
         )
+
+    def get_avatar(self, obj):
+        photo_url = 'http://localhost:8000'+obj.avatar.url
+        return photo_url
+
+
 
 
 class UploadAvatarSerializer(serializers.ModelSerializer):
@@ -167,4 +173,3 @@ class TokenBlacklistResponseSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         raise NotImplementedError()
-
