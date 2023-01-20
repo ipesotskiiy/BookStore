@@ -2,6 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from bookstore.settings import DEFAULT_PORT, DEFAULT_ADDR
 
 from product import serializer as SS
 
@@ -59,7 +60,7 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
     def get_avatar(self, obj):
-        photo_url = 'http://localhost:8000'+obj.avatar.url
+        photo_url = f'http://{DEFAULT_ADDR}:{DEFAULT_PORT}'+obj.avatar.url
         return photo_url
 
 

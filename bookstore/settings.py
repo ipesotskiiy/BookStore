@@ -48,6 +48,9 @@ ALLOWED_HOSTS = [
 runserver.default_port = '8000'
 runserver.default_addr = 'localhost'
 
+DEFAULT_PORT = runserver.default_port
+DEFAULT_ADDR = runserver.default_addr
+
 # CORS_ORIGIN_WHITELIST = [
 #     "*"
 # ]
