@@ -11,9 +11,6 @@ from product.views import (
     RecommendationView,
     AverRateView,
     FavoritesView
-    # GetFavoritesView,
-    # AddFavoritesView,
-    # DeleteFavoritesView
 )
 
 app_name = 'product'

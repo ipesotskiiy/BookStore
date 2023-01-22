@@ -1,17 +1,14 @@
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
-from django.core.validators import RegexValidator
 from django.db import models
 
-import product.models as product_models
 from user.managers import CustomUserManager
 
 
 def upload_to(instance, filename):
-    return 'images/{filename}'.format(filename=filename)
+    return 'media/images/{filename}'.format(filename=filename)
 
 
-# Create your models here.
 class User(AbstractBaseUser, PermissionsMixin):
     username = None
     favorites = models.ManyToManyField('product.Book', null=True, blank=True, related_name='favorites')
@@ -19,7 +16,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name='Your email', max_length=40, db_index=True, unique=True)
     name = models.CharField(verbose_name='Your name', max_length=30, null=True, blank=True)
     password = models.CharField(verbose_name='Your password', max_length=255)
-    avatar = models.CharField(
+    avatar = models.FileField(
+        upload_to='',
         verbose_name='Your avatar',
         max_length=250,
         null=True,

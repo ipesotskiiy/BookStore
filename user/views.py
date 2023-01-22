@@ -1,17 +1,17 @@
+import base64
+
+from django.core.files.base import ContentFile
 from django.db import IntegrityError
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
-from rest_framework.parsers import FileUploadParser, MultiPartParser, JSONParser
+from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
-from rest_framework.validators import UniqueValidator
 from rest_framework.views import APIView
-from rest_framework.viewsets import ViewSet
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView, TokenViewBase, TokenRefreshView, \
-    TokenBlacklistView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView, TokenRefreshView, TokenBlacklistView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from rest_framework.authentication import TokenAuthentication, get_authorization_header
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from user.models import User
 from user.serializer import (
@@ -25,9 +25,7 @@ from user.serializer import (
 )
 
 
-# Create your views here.
 class RegisterUserAPIView(generics.CreateAPIView):
-    # permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):
@@ -37,9 +35,7 @@ class RegisterUserAPIView(generics.CreateAPIView):
                 user = serializer.save()
                 token = AccessToken.for_user(user)
                 refreshToken = RefreshToken.for_user(user)
-                # refreshToken.token_type = 'refreshToken'
                 resp = Response({"user": UserSerializer(user, context=self.get_serializer_context()).data,
-                                 # "message": "User Created Successfully.  Now perform Login to get your token",
                                  "token": str(token), "refreshToken": str(refreshToken)
                                  })
                 return resp
@@ -64,7 +60,6 @@ class MyTokenObtainPairView(TokenObtainPairView):
 class GetProfileView(APIView):
     authentication_classes = [JWTAuthentication]
 
-    # serializer_class = MyTokenObtainPairSerializer
     def get(self, request):
         try:
             http_token = request.META['HTTP_AUTHORIZATION']
@@ -76,8 +71,6 @@ class GetProfileView(APIView):
 
             resp = Response({
                 "user": UserSerializer(user).data,
-                # "token": token,
-                # "message": 'access is allowed'
             })
             return resp
 
@@ -99,33 +92,26 @@ class UpdateUserView(generics.UpdateAPIView):
             return Response({"message": 'not valid'})
 
 
-# class UploadViewSet(ViewSet):
-#     serializer_class = UploadAvatarSerializer
-#
-#     def list(self, request):
-#         return Response("GET API")
-#
-#     def create(self, request):
-#         avatar = request.FILES.get('avatar')
-#         content_type = avatar.content_type
-#         response = "POST API and you have uploaded a {} file".format(content_type)
-#         return Response(response)
-
 class UploadAvatarView(generics.UpdateAPIView):
     authentication_classes = [JWTAuthentication]
-    parser_classes = [JSONParser]  # MultiPartParser ]
+    parser_classes = [JSONParser]
     queryset = User.objects.all()
     serializer_class = UploadAvatarSerializer
 
     def patch(self, request, *args, **kwargs):
         try:
-            current_user = request.user
-            serializer = self.get_serializer(data=UploadAvatarSerializer(current_user).data['avatar'])
-            if serializer.is_valid(raise_exception=True):
-                serializer.perform_update()
+            formatb, imgstr = request.data['img'].split(';base64,')
+            ext = formatb.split('/')[-1]
+
+            data = ContentFile(base64.b64decode(imgstr), name=ext)
+
+            base_path = InMemoryUploadedFile(data, field_name=None, name="myfile.jpg", content_type='image/jpeg',
+                                             size=data.size, charset=None)
+            request.user.avatar = base_path
+            request.user.save()
 
             return Response({
-                'avatar': serializer.data
+                'ok': 'da'
             })
 
         except Exception as e:

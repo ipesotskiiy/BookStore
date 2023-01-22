@@ -2,8 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
-from product import serializer as SS
+from bookstore.settings import DEFAULT_PORT, DEFAULT_ADDR
 
 from product.serializer import BookSerializer
 
@@ -13,6 +12,7 @@ from user.models import User
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=False)
     favorites = BookSerializer(many=True, required=False)
+    avatar = serializers.SerializerMethodField('get_avatar')
 
     class Meta:
         model = User
@@ -21,8 +21,12 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'avatar',
             'name',
-            'favorites'
+            'favorites',
         )
+
+    def get_avatar(self, obj):
+        photo_url = f'http://{DEFAULT_ADDR}:{DEFAULT_PORT}{obj.avatar.url}'
+        return photo_url
 
 
 class UploadAvatarSerializer(serializers.ModelSerializer):
@@ -87,14 +91,11 @@ class RegisterSerializer(serializers.ModelSerializer):
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
-        # The default result (access/refresh tokens)
         data = super(MyTokenObtainPairSerializer, self).validate(attrs)
         data['token'] = data.pop('access')
         data['refreshToken'] = data.pop('refresh')
 
-        # Custom data you want to include
         data.update({'user': UserSerializer(self.user).data})
-        # and everything else you want to send in the response
         return data
 
 
@@ -133,4 +134,3 @@ class TokenBlacklistResponseSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         raise NotImplementedError()
-
