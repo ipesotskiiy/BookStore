@@ -5,6 +5,7 @@ from django.db import IntegrityError
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
+from rest_framework.mixins import UpdateModelMixin
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,6 +17,8 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from user.models import User
 from user.serializer import (
     UserSerializer,
+    UserSerializer1,
+    UserSerializer2,
     RegisterSerializer,
     MyTokenObtainPairSerializer,
     UploadAvatarSerializer,
@@ -35,7 +38,7 @@ class RegisterUserAPIView(generics.CreateAPIView):
                 user = serializer.save()
                 token = AccessToken.for_user(user)
                 refreshToken = RefreshToken.for_user(user)
-                resp = Response({"user": UserSerializer(user, context=self.get_serializer_context()).data,
+                resp = Response({"user": UserSerializer1(user, context=self.get_serializer_context()).data,
                                  "token": str(token), "refreshToken": str(refreshToken)
                                  })
                 return resp
@@ -78,18 +81,20 @@ class GetProfileView(APIView):
             raise ValidationError({"400": f'{str(e)}'})
 
 
-class UpdateUserView(generics.UpdateAPIView):
+class UpdateUserView(generics.UpdateAPIView, UpdateModelMixin):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
     def patch(self, request, pk, *args, **kwargs):
         queryset = User.objects.get(pk=self.kwargs['pk'])
-        serializer = UserSerializer(queryset)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'user': serializer.data})
-        else:
-            return Response({"message": 'not valid'})
+        serializer = UserSerializer1(data={'user': queryset})
+        lookup_field = 'pk'
+        return self.partial_update(request, *args, **kwargs)
+        # if serializer.is_valid(raise_exception=True):
+        #     self.partial_update(serializer, request, *args, **kwargs, partial=False)
+        #     return Response({'user': serializer.data})
+        # else:
+        #     return Response({"message": 'not valid'})
 
 
 class UploadAvatarView(generics.UpdateAPIView):

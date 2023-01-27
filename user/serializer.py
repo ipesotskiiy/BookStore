@@ -1,4 +1,5 @@
 from django.contrib.auth.password_validation import validate_password
+from django.core.validators import EmailValidator
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -12,7 +13,7 @@ from user.models import User
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=False)
     favorites = BookSerializer(many=True, required=False)
-    avatar = serializers.SerializerMethodField('get_avatar')
+    avatar = serializers.SerializerMethodField('get_avatar', required=False)
 
     class Meta:
         model = User
@@ -27,6 +28,32 @@ class UserSerializer(serializers.ModelSerializer):
     def get_avatar(self, obj):
         photo_url = f'http://{DEFAULT_ADDR}:{DEFAULT_PORT}{obj.avatar.url}'
         return photo_url
+
+
+class UserSerializer1(serializers.ModelSerializer):
+    email = serializers.EmailField(required=False)
+    favorites = BookSerializer(many=True, required=False)
+
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'email',
+            'name',
+            'favorites',
+        )
+
+
+class UserSerializer2(serializers.ModelSerializer):
+    favorites = BookSerializer(many=True, required=False)
+
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'name',
+            'favorites',
+        )
 
 
 class UploadAvatarSerializer(serializers.ModelSerializer):
