@@ -5,19 +5,21 @@ from product.models import Comment, Genre, Rating, Book
 
 class CommentSerializer(serializers.ModelSerializer):
     date = serializers.DateTimeField(required=False, format="%Y-%m-%d %H:%M:%S")
-    user = serializers.StringRelatedField(required=False)
+    name = serializers.ReadOnlyField(source='user.name')
+    avatar = serializers.ReadOnlyField(source='user.avatar')
 
     def validate(self, value):
         return value
 
     class Meta:
-        depth = 1
         model = Comment
         fields = (
             'date',
             'text',
             'bookId',
             'user',
+            'name',
+            'avatar'
         )
 
 
