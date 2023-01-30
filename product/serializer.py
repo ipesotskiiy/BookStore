@@ -5,6 +5,8 @@ from product.models import Comment, Genre, Rating, Book
 
 class CommentSerializer(serializers.ModelSerializer):
     date = serializers.DateTimeField(required=False, format="%Y-%m-%d %H:%M:%S")
+    name = serializers.ReadOnlyField(source='user.name')
+    avatar = serializers.ReadOnlyField(source='user.avatar')
 
     def validate(self, value):
         return value
@@ -15,7 +17,9 @@ class CommentSerializer(serializers.ModelSerializer):
             'date',
             'text',
             'bookId',
-            'user'
+            'user',
+            'name',
+            'avatar'
         )
 
 

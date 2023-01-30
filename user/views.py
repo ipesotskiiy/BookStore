@@ -86,15 +86,7 @@ class UpdateUserView(generics.UpdateAPIView, UpdateModelMixin):
     serializer_class = UserSerializer
 
     def patch(self, request, pk, *args, **kwargs):
-        queryset = User.objects.get(pk=self.kwargs['pk'])
-        serializer = UserSerializer1(data={'user': queryset})
-        lookup_field = 'pk'
         return self.partial_update(request, *args, **kwargs)
-        # if serializer.is_valid(raise_exception=True):
-        #     self.partial_update(serializer, request, *args, **kwargs, partial=False)
-        #     return Response({'user': serializer.data})
-        # else:
-        #     return Response({"message": 'not valid'})
 
 
 class UploadAvatarView(generics.UpdateAPIView):

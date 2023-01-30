@@ -21,7 +21,6 @@ from django.core.management.commands.runserver import Command as runserver
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 dotenv_path = os.path.join(BASE_DIR, '.env')
 load_dotenv(dotenv_path)
 
@@ -30,7 +29,6 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 
 CORS_ORIGIN_ALLOW_ALL = True
-
 
 ALLOWED_HOSTS = [
     "*"
@@ -43,8 +41,6 @@ DEFAULT_PORT = runserver.default_port
 DEFAULT_ADDR = runserver.default_addr
 
 CORS_ALLOW_CREDENTIALS = False
-
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -60,6 +56,7 @@ INSTALLED_APPS = [
     'knox',
     'corsheaders',
     'drf_yasg',
+    'channels',
 
     'user',
     'product'
@@ -85,7 +82,6 @@ REST_FRAMEWORK = {
     ],
 
 }
-
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
@@ -138,6 +134,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'bookstore.wsgi.application'
+ASGI_APPLICATION = 'bookstore.asgi.application'
 
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
@@ -150,6 +147,23 @@ SWAGGER_SETTINGS = {
 }
 
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+
+CACHE_TTL = 60 * 1
+
+
+
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE'),
@@ -160,7 +174,6 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT')
     }
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -190,8 +203,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
@@ -200,7 +211,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

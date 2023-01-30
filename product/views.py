@@ -99,6 +99,8 @@ class CreateCommentView(generics.CreateAPIView):
     serializer_class = CommentSerializer
 
     def post(self, request, *args, **kwargs):
+        name = request.user.name
+        avatar = request.user.avatar
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             comment = serializer.save()
