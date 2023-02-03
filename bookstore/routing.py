@@ -9,7 +9,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_ws.settings')
 
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),
-    'websocket': TokenAuthMiddleware(
-        URLRouter(user.routing.websocket_urlpatterns)
-    )
+    'websocket': URLRouter(user.routing.websocket_urlpatterns)
+        #TokenAuthMiddleware(
+    #)
 })

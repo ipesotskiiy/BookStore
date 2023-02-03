@@ -43,6 +43,7 @@ DEFAULT_ADDR = runserver.default_addr
 CORS_ALLOW_CREDENTIALS = False
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -133,8 +134,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'bookstore.wsgi.application'
-ASGI_APPLICATION = 'bookstore.asgi.application'
+# WSGI_APPLICATION = 'bookstore.wsgi.application'
+ASGI_APPLICATION = 'bookstore.routing.application'
+
 
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
@@ -154,7 +156,8 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(REDIS_HOST, REDIS_PORT)],
+
+            "hosts": [f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:6379/0"],
         },
     },
 }
@@ -162,7 +165,7 @@ CHANNEL_LAYERS = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/1',
+        'LOCATION': f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:6379/1',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }

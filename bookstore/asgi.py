@@ -16,4 +16,7 @@ from django.core.asgi import get_asgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bookstore.settings')
 django.setup()
 
-application = get_asgi_application()
+application = ProtocolTypeRouter({
+
+})
+    #get_asgi_application()
