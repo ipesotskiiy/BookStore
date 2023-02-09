@@ -18,11 +18,11 @@ from channels.generic.websocket import WebsocketConsumer
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        print('here we go1')
+        print('here we connect')
         self.accept()
 
     def disconnect(self, close_code):
-        print('here we ne go1')
+        print('here we ne disconnect', close_code)
         pass
 
     def receive(self, text_data):

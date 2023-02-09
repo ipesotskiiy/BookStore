@@ -1,8 +1,23 @@
+import redis
+import simplejson
+
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 
+from bookstore import settings
 from user.managers import CustomUserManager
+
+ORDERS_REDIS_HOST = getattr(settings, 'REDIS_HOST')
+ORDERS_REDIS_PORT = getattr(settings, 'REDIS_PORT')
+ORDERS_REDIS_PASSWORD = getattr(settings, 'REDIS_PASSWORD')
+
+service_queue = redis.StrictRedis(
+    host=ORDERS_REDIS_HOST,
+    port=ORDERS_REDIS_PORT,
+    password=ORDERS_REDIS_PASSWORD
+).publish
+json = simplejson.dumps
 
 
 def upload_to(instance, filename):
@@ -37,3 +52,24 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class Order(models.Model):
+
+    def lock(self):
+        """
+        Закрепление заказа
+        """
+        service_queue('order_lock', json({
+            'user': self.client.pk,
+            'order': self.pk,
+        }))
+
+    def done(self):
+        """
+        Завершение заказа
+        """
+        service_queue('order_done', json({
+            'user': self.client.pk,
+            'order': self.pk,
+        }))

@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'channels',
 
     'user',
-    'product'
+    'product',
+    'chat'
 ]
 
 MIDDLEWARE = [
@@ -135,7 +136,7 @@ TEMPLATES = [
 ]
 
 # WSGI_APPLICATION = 'bookstore.wsgi.application'
-ASGI_APPLICATION = 'bookstore.routing.application'
+ASGI_APPLICATION = 'bookstore.asgi.application'
 
 
 SWAGGER_SETTINGS = {
