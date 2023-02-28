@@ -10,3 +10,5 @@ logger/__pycache__/
 static/
 media/
 static_root/
+tests/__pycache__/
+tests/product/__pycache__/
