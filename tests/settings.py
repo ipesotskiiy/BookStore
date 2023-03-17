@@ -201,43 +201,27 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # data for test database
 
-#Superuser
+# Superuser
 TEST_SUPER_USER_EMAIL = 'admin@yandex.ru'
 TEST_SUPER_USER_PASSWORD = 'qwerty'
 
 # User
-
-# favorites = models.ManyToManyField('product.Book', null=True, blank=True, related_name='favorites')
-#     role = models.CharField(verbose_name='User role', max_length=10, null=True, blank=True)
-#     email = models.EmailField(verbose_name='Your email', max_length=40, db_index=True, unique=True)
-#     name = models.CharField(verbose_name='Your name', max_length=30, null=True, blank=True)
-#     password = models.CharField(verbose_name='Your password', max_length=255)
-#     avatar = models.FileField(
-#         upload_to='',
-#         verbose_name='Your avatar',
-#         max_length=250,
-#         null=True,
-#         blank=True
-#     )
-#     is_active = models.BooleanField(default=True)
-#     is_staff = models.BooleanField(default=False)
-
-# Genre
-TEST_GENRE_NAME = 'Horror'
-
-# name = models.CharField(verbose_name='Genre', max_length=20)
-#     userId = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='rating',
-#                                verbose_name='user id', null=True, blank=True)
+TEST_USER_EMAIL = 'test@test.com'
+TEST_USER_NAME = 'igor'
+TEST_USER_PASSWORD = 'test'
 
 # Book
+TEST_BOOK_GENRE = 'Horror'
+TEST_BOOK_TITLE = 'Corgi'
+TEST_BOOK_AUTHOR = 'Pesotskiy Igor'
+TEST_BOOK_PRICE = 60
+TEST_BOOK_COVER = 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fbe.chewy.com%2Fdog-breed%2Fpembroke-welsh-corgi%2F&psig=AOvVaw3LAmhQlR5GQa8c3r4gj2Yy&ust=1677861494137000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCIicv6TXvf0CFQAAAAAdAAAAABAE'
+TEST_BOOK_DATE_OF_ISSUE = '20-02-2023'
+TEST_BOOK_IN_STOCK = 5
+TEST_BOOK_DESCRIPTION = 'TEST DESK'
 
-# genre = models.ManyToManyField(Genre, related_name='genres')
-#     title = models.CharField(verbose_name='Book title', max_length=50)
-#     author = models.CharField(verbose_name='Author', max_length=80)
-#     price = models.DecimalField(verbose_name='Price', max_digits=8, decimal_places=2, null=True, blank=True)
-#     cover = models.CharField(verbose_name='Cover', max_length=250, null=True, blank=True)
-#     date_of_issue = models.DateField(verbose_name='Date of Issue', default=timezone.now)
-#     in_stock = models.PositiveIntegerField(verbose_name='In stock', null=True, blank=True)
-#     description = models.TextField(verbose_name='Description', max_length=900, null=True, blank=True)
-#     averageRate = models.FloatField(verbose_name='Average rate', null=True, blank=True, max_length=3)
-#     isInFavorite = models.BooleanField(null=True, blank=True)
+# TODO
+# Comment
+TEST_COMMENT_DATE = '21.02.2023'
+TEST_COMMENT_TEXT = 'test'
+

@@ -12,3 +12,5 @@ media/
 static_root/
 tests/__pycache__/
 tests/product/__pycache__/
+tests/fixtures/__pycache__/
+db.sqlite3

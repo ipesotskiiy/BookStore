@@ -18,7 +18,6 @@ from user.models import User
 from user.serializer import (
     UserSerializer,
     UserSerializer1,
-    UserSerializer2,
     RegisterSerializer,
     MyTokenObtainPairSerializer,
     UploadAvatarSerializer,
