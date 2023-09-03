@@ -17,14 +17,9 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from user.models import User
 from user.serializer import (
     UserSerializer,
-    UserSerializer1,
-    UserSerializer2,
     RegisterSerializer,
     MyTokenObtainPairSerializer,
     UploadAvatarSerializer,
-    TokenObtainPairResponseSerializer,
-    TokenRefreshResponseSerializer,
-    TokenVerifyResponseSerializer, TokenBlacklistResponseSerializer
 )
 
 
@@ -34,17 +29,15 @@ class RegisterUserAPIView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         try:
             serializer = self.get_serializer(data=request.data)
+
             if serializer.is_valid(raise_exception=True):
                 user = serializer.save()
                 token = AccessToken.for_user(user)
                 refreshToken = RefreshToken.for_user(user)
-                resp = Response({"user": UserSerializer1(user, context=self.get_serializer_context()).data,
+                resp = Response({"user": UserSerializer(user, context=self.get_serializer_context()).data,
                                  "token": str(token), "refreshToken": str(refreshToken)
                                  })
                 return resp
-
-            else:
-                return Response({"message": 'not valid'})
 
         except IntegrityError as e:
             account = User.objects.get(username='')
@@ -113,43 +106,3 @@ class UploadAvatarView(generics.UpdateAPIView):
 
         except Exception as e:
             raise Exception(str(e))
-
-
-class DecoratedTokenObtainPairView(TokenObtainPairView):
-    @swagger_auto_schema(
-        responses={
-            status.HTTP_200_OK: TokenObtainPairResponseSerializer,
-        }
-    )
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-
-
-class DecoratedTokenRefreshView(TokenRefreshView):
-    @swagger_auto_schema(
-        responses={
-            status.HTTP_200_OK: TokenRefreshResponseSerializer,
-        }
-    )
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-
-
-class DecoratedTokenVerifyView(TokenVerifyView):
-    @swagger_auto_schema(
-        responses={
-            status.HTTP_200_OK: TokenVerifyResponseSerializer,
-        }
-    )
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-
-
-class DecoratedTokenBlacklistView(TokenBlacklistView):
-    @swagger_auto_schema(
-        responses={
-            status.HTTP_200_OK: TokenBlacklistResponseSerializer,
-        }
-    )
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)

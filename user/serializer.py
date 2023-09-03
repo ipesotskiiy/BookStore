@@ -30,30 +30,30 @@ class UserSerializer(serializers.ModelSerializer):
         return photo_url
 
 
-class UserSerializer1(serializers.ModelSerializer):
-    email = serializers.EmailField(required=False)
-    favorites = BookSerializer(many=True, required=False)
+# class UserSerializer1(serializers.ModelSerializer):
+#     email = serializers.EmailField(required=False)
+#     favorites = BookSerializer(many=True, required=False)
+#
+#     class Meta:
+#         model = User
+#         fields = (
+#             'id',
+#             'email',
+#             'name',
+#             'favorites',
+#         )
 
-    class Meta:
-        model = User
-        fields = (
-            'id',
-            'email',
-            'name',
-            'favorites',
-        )
 
-
-class UserSerializer2(serializers.ModelSerializer):
-    favorites = BookSerializer(many=True, required=False)
-
-    class Meta:
-        model = User
-        fields = (
-            'id',
-            'name',
-            'favorites',
-        )
+# class UserSerializer2(serializers.ModelSerializer):
+#     favorites = BookSerializer(many=True, required=False)
+#
+#     class Meta:
+#         model = User
+#         fields = (
+#             'id',
+#             'name',
+#             'favorites',
+#         )
 
 
 class UploadAvatarSerializer(serializers.ModelSerializer):

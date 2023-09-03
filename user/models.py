@@ -20,6 +20,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         upload_to='',
         verbose_name='Your avatar',
         max_length=250,
+        default='myfile.jpg',
         null=True,
         blank=True
     )
