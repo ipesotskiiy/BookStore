@@ -5,7 +5,6 @@ from product.views import (
     OneBookView,
     GenreView,
     OneGenreView,
-    BookVS,
     CreateCommentView,
     CreateRatingView,
     RecommendationView,
@@ -17,7 +16,6 @@ app_name = 'product'
 
 urlpatterns = [
     path('all', BookView.as_view(), name='books'),
-    path('all2', BookVS.as_view({'get': 'list'}), name='books2'),
     path('add-comment', CreateCommentView.as_view(), name='add-comment'),
     path('rate', CreateRatingView.as_view(), name='add-rating'),
     path('recommendations&exclude=<id>', RecommendationView.as_view(), name='recommendations'),

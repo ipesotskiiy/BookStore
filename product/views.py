@@ -68,16 +68,6 @@ class OneGenreView(APIView):
         return Response({'genre': serializer.data})
 
 
-class BookVS(ModelViewSet):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['price', 'title']
-    search_fields = ['price', 'title']
-    ordering_fields = ['title', 'id']
-    ordering = ['title']
-
-
 class BookView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
