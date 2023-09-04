@@ -8,7 +8,7 @@ from product.views import (
     CreateCommentView,
     CreateRatingView,
     RecommendationView,
-    AverRateView,
+    # AverRateView,
     FavoritesView
 )
 
@@ -25,6 +25,4 @@ urlpatterns = [
     path('favorites/<id>', FavoritesView.as_view(), name='delete_favorites'),
     path('add-favorites/<id>', FavoritesView.as_view(), name='add_favorites'),
     path('<id>', OneBookView.as_view(), name='book'),
-    path('<id>/rate', AverRateView.as_view(), name='aver_rate'),
-
 ]

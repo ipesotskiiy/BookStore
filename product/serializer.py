@@ -72,27 +72,6 @@ class BookSerializer(serializers.ModelSerializer):
         return obj.id
 
 
-class BookRateSerializer(BookSerializer):
-    averageRate = serializers.SerializerMethodField('calculate_average_rate_value')
-
-    def calculate_average_rate_value(self, book):
-        ratings = [item.rating for item in Rating.objects.filter(bookId=book.bookId_id)]
-        for i in range(len(ratings)):
-            if ratings[i] is None:
-                ratings[i] = 1
-        count_rate = len(ratings)
-        sum_rate = sum(ratings)
-        aver_rate = sum_rate / count_rate
-        return round(aver_rate, 2)
-
-    def get_id(self, obj):
-        return obj.bookId_id
-
-    class Meta:
-        model = Book
-        fields = '__all__'
-
-
 class FavoriteSerializer(serializers.ModelSerializer):
     isInFavorite = serializers.BooleanField(required=False)
     title = serializers.CharField(required=False)

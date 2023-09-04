@@ -12,7 +12,6 @@ from product.serializer import (
     GenreSerializer,
     CommentSerializer,
     RatingSerializer,
-    BookRateSerializer,
     FavoriteSerializer
 )
 from user.serializer import UserSerializer
@@ -42,13 +41,6 @@ class CreateRatingView(generics.CreateAPIView):
             return Response({'name': str(serializer.data)})
         else:
             return Response({'invalid': 'Invalid rating'})
-
-
-class AverRateView(generics.ListAPIView):
-    def get(self, request, id):
-        name = Rating.objects.filter(bookId=self.kwargs['id'])
-        serializer = BookRateSerializer(name, many=True)
-        return Response({'aver_rate': serializer.data})
 
 
 class OneBookView(APIView):
