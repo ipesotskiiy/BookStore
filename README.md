@@ -15,6 +15,23 @@
 git clone https://github.com/ipesotskiiy/bookstore-react
 git clone https://github.com/ipesotskiiy/bookstore
 
+# Функции API
+- http://127.0.0.1:8000/swagger - получение свагера
+- http://127.0.0.1:8000/book/all - получение всех книг
+- http://127.0.0.1:8000/book/add-comment - добивать комментарий
+- http://127.0.0.1:8000/book/rate - добавить рейтинг
+- http://127.0.0.1:8000/book/recommendations&exclude=<id> - получить рекомендации
+- http://127.0.0.1:8000/book/genres - получить жанры
+- http://127.0.0.1:8000/book/genres/<id> - получить конкретный жанр
+- http://127.0.0.1:8000/book/favorites - получить избранное
+- http://127.0.0.1:8000/book/favorites/<id> - получить книгу из избраного
+- http://127.0.0.1:8000/book/add-favorites/<id> - добавить книу в избранное
+- http://127.0.0.1:8000/book/<id> - полчить конретную книгу
+- http://127.0.0.1:8000/auth/signup - зарегистрировать пользователя
+- http://127.0.0.1:8000/auth/signin - войти 
+- http://127.0.0.1:8000/auth/user/upload-avatar - обновить аватар
+- http://127.0.0.1:8000/auth/user/<pk> - обновить профиль
+
 После чего необходимо установить библиотеки pip install -r requirements.txt
 
 Создать .env файл в котором будут указаны данные для бд
