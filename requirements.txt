@@ -1,5 +1,4 @@
 asgiref==3.5.2
-backports.zoneinfo==0.2.1
 bidict==0.22.1
 certifi==2022.12.7
 cffi==1.15.1
@@ -36,7 +35,6 @@ packaging==23.0
 Pillow==9.3.0
 psycopg2-binary==2.9.5
 pycparser==2.21
-PyJWT==2.6.0
 python-dotenv==0.21.0
 python-engineio==4.3.4
 python-socketio==5.7.2
@@ -51,5 +49,4 @@ socketio==0.2.1
 sqlparse==0.4.3
 uritemplate==4.1.1
 urllib3==1.26.13
-uWSGI==2.0.21
 zipp==3.11.0

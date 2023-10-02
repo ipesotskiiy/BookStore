@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 dotenv_path = os.path.join(BASE_DIR, '.env')
 load_dotenv(dotenv_path)
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = 'd#$y4(y!j+=7_(2f)yab84@cx-wby778@ao74tqd+#lana8y!p'
 
 DEBUG = True
 
